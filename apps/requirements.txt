@@ -1,0 +1,2 @@
+# forward-bug.py uses only Python 3 stdlib (urllib, json, argparse)
+# No external dependencies required.

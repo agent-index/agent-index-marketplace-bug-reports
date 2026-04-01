@@ -1,0 +1,27 @@
+{
+  "name": "bug-reports",
+  "display_name": "Bug Reports",
+  "version": "1.0.0",
+  "description": "Bug reporting workflow — any member can submit bugs, org admins can review, triage, and forward selected reports to the agent-index log collection server.",
+  "author": "agent-index",
+  "license": "open",
+  "category": "developer-tools",
+  "agent_index_min_version": "2.0.0",
+  "api": [
+    "report-bug",
+    "view-bugs",
+    "forward-bug"
+  ],
+  "dependencies": [],
+  "external_dependencies": [
+    {
+      "system": "agent-index-filesystem MCP",
+      "access_required": "Read/write access to /shared/bug-reports/ for shared bug log storage",
+      "contact": "org admin",
+      "required": true
+    }
+  ],
+  "eol_date": null,
+  "marketplace_url": "https://github.com/agent-index/agent-index-marketplace-bug-reports",
+  "support_url": "https://agent-index.ai/support"
+}

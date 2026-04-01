@@ -1,0 +1,28 @@
+{
+  "name": "view-bugs",
+  "type": "skill",
+  "display_name": "View Bugs",
+  "collection": "bug-reports",
+  "collection_version": "1.0.0",
+  "version": "1.0.0",
+  "eol_date": null,
+  "eol_warning_days": 60,
+  "stateful": true,
+  "setup_template": "view-bugs-setup.md",
+  "dependency_status": "complete",
+  "missing_dependencies": [],
+  "parameter_provenance": {
+    "bug_log_path": "org-mandated",
+    "admin_roles": "org-mandated"
+  },
+  "dependencies": {
+    "skills": [],
+    "tasks": []
+  },
+  "external_dependencies": [
+    "agent-index-filesystem MCP"
+  ],
+  "optional_external_dependencies": [],
+  "reads_from": "/shared/bug-reports/",
+  "writes_to": "/shared/bug-reports/"
+}

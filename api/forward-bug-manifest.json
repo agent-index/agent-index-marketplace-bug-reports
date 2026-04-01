@@ -1,0 +1,32 @@
+{
+  "name": "forward-bug",
+  "type": "task",
+  "display_name": "Forward Bug",
+  "collection": "bug-reports",
+  "collection_version": "1.0.0",
+  "version": "1.0.0",
+  "eol_date": null,
+  "eol_warning_days": 60,
+  "stateful": true,
+  "produces_artifacts": false,
+  "produces_shared_artifacts": true,
+  "setup_template": "forward-bug-setup.md",
+  "dependency_status": "complete",
+  "missing_dependencies": [],
+  "parameter_provenance": {
+    "bug_log_path": "org-mandated",
+    "log_server_url": "org-mandated",
+    "log_server_auth_key": "org-mandated",
+    "admin_roles": "org-mandated"
+  },
+  "dependencies": {
+    "skills": [],
+    "tasks": ["report-bug"]
+  },
+  "external_dependencies": [
+    "agent-index-filesystem MCP"
+  ],
+  "optional_external_dependencies": [],
+  "reads_from": "/shared/bug-reports/",
+  "writes_to": "/shared/bug-reports/"
+}
