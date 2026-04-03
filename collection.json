@@ -10,7 +10,8 @@
   "api": [
     "report-bug",
     "view-bugs",
-    "forward-bug"
+    "forward-bug",
+    "bug-reports-tutorial"
   ],
   "dependencies": [],
   "external_dependencies": [
