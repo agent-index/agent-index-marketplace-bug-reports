@@ -1,7 +1,7 @@
 {
   "name": "bug-reports",
   "display_name": "Bug Reports",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Bug reporting workflow — any member can submit bugs, org admins can review, triage, and forward selected reports to the agent-index log collection server.",
   "author": "agent-index",
   "license": "open",

@@ -1,7 +1,7 @@
 ---
 name: bug-reports-tutorial-setup
 type: setup
-version: 1.0.0
+version: 1.1.0
 collection: bug-reports
 description: Setup for the bug-reports-tutorial skill
 target: bug-reports-tutorial

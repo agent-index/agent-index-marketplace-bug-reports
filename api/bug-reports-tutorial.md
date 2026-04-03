@@ -1,7 +1,7 @@
 ---
 name: bug-reports-tutorial
 type: skill
-version: 1.0.0
+version: 1.1.0
 collection: bug-reports
 description: Explains the bug-reports collection to members — its concepts, workflows, and how to report bugs and understand the admin triage process — through a guided tour or targeted answers to specific questions.
 stateful: false

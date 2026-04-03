@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.0] — 2026-04-02
+
+### Added
+- `bug-reports-tutorial` skill — explains bug-reports collection concepts, workflows, member reporting, and admin triage process
+
 ## [1.0.0] — 2026-04-01
 
 ### Added
