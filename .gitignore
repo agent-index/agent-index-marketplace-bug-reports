@@ -1,0 +1,16 @@
+# Credentials
+credentials.json
+token.json
+auth-key.txt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp

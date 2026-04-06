@@ -2,7 +2,7 @@
 
 ## Current State
 
-v1.0.0 provides the core bug reporting loop: submit, view, forward. Each bug report is stored as an individual markdown file (`/shared/bug-reports/bugs/{id}.md`) with a JSON manifest for indexing. Forwarding sends reports to the agent-index log collection server via a Python script.
+v1.1.0 provides the core bug reporting loop: submit, view, forward, plus a guided tutorial for member onboarding. Each bug report is stored as an individual markdown file (`/shared/bug-reports/bugs/{id}.md`) with a JSON manifest for indexing. Forwarding sends reports to the agent-index log collection server via a Python script.
 
 ## Known Limitations
 
@@ -20,13 +20,18 @@ None yet.
 
 ## Wishlist
 
-### v1.1 — Quality of life
+### v1.1 — Quality of life (shipped 2026-04-02)
+
+- ~~**Tutorial skill.**~~ Done. `bug-reports-tutorial` explains collection concepts, workflows, member reporting, and admin triage process.
+
+### v1.2 — Quality of life (continued)
+
 - Search within bug descriptions (not just titles and metadata)
 - Batch forwarding — forward multiple bugs in a single operation
 - Duplicate detection hints — when a new bug is submitted, check for similar titles/collections and suggest possible duplicates to the reporter
 - Bug statistics — show trends over time (bugs per week, mean time to forward, most-reported collections)
 
-### v1.2 — Richer reports
+### v1.3 — Richer reports
 - Attachment support — allow members to reference files (error logs, screenshots) stored at a known path on the remote filesystem
 - Bug templates — pre-defined templates for common bug types (crash, data loss, classification error, setup failure) with tailored questions
 - Auto-populate collection version — read the installed collection version and include it in the report automatically
