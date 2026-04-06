@@ -1,7 +1,7 @@
 ---
 name: bug-reports-collection-setup
 type: collection-setup
-version: 1.0.0
+version: 1.1.0
 collection: bug-reports
 description: Org-admin setup for the bug-reports collection — configures the shared bug log path, admin roles, log collection server endpoint, and authentication for forwarding bugs upstream.
 upgrade_compatible: true

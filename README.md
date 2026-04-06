@@ -10,6 +10,8 @@ Bug reporting workflow for agent-index orgs. Any member can submit bug reports a
 
 - **forward-bug** (task) — Forward a selected bug report to the upstream agent-index log collection server. Packages the bug into the log collector's expected JSON envelope, authenticates with the configured API key, and sends via HTTP. Marks the bug as forwarded in the shared log. Admin roles only.
 
+- **bug-reports-tutorial** (skill) — Guided walkthrough of how the bug reporting system works. Explains concepts, workflows, and answers specific questions about filing and managing bugs. Say `@ai:bug-tutorial` to start.
+
 ## How It Works
 
 Each bug report is stored as an individual markdown file on the remote filesystem (`/shared/bug-reports/bugs/{id}.md` by default). Each file has YAML frontmatter for structured querying and a markdown body with the full details. A companion manifest file (`bug-manifest.json`) indexes all bugs for fast lookups without reading every file.
