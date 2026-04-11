@@ -1,7 +1,7 @@
 ---
 name: report-bug-setup
 type: setup
-version: 1.0.0
+version: 1.1.0
 collection: bug-reports
 description: Setup for the report-bug task — minimal member-level setup since all configuration is org-mandated at collection install time.
 target: report-bug

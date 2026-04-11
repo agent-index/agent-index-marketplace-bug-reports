@@ -1,7 +1,7 @@
 ---
 name: report-bug
 type: task
-version: 1.0.0
+version: 1.1.0
 collection: bug-reports
 description: Walk a member through submitting a bug report — collect details about the issue, severity, and reproduction steps, then write the report as an individual file and update the manifest index.
 stateful: true

@@ -1,7 +1,7 @@
 ---
 name: view-bugs
 type: skill
-version: 1.0.0
+version: 1.1.0
 collection: bug-reports
 description: Interactive admin interface for viewing, filtering, and triaging bug reports. Admins can browse all submitted bugs, update status, add notes, and select bugs for forwarding.
 stateful: true

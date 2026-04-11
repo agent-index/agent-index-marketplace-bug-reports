@@ -4,7 +4,7 @@
   "display_name": "Forward Bug",
   "collection": "bug-reports",
   "collection_version": "1.1.0",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "eol_date": null,
   "eol_warning_days": 60,
   "stateful": true,
@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "skills": [],
-    "tasks": ["report-bug"]
+    "tasks": [
+      "report-bug"
+    ]
   },
   "external_dependencies": [
     "agent-index-filesystem MCP"

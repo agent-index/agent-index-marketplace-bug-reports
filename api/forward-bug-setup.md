@@ -1,7 +1,7 @@
 ---
 name: forward-bug-setup
 type: setup
-version: 1.0.0
+version: 1.1.0
 collection: bug-reports
 description: Setup for the forward-bug task — validates admin role access, remote filesystem connectivity, and log server configuration.
 target: forward-bug

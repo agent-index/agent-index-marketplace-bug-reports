@@ -1,7 +1,7 @@
 ---
 name: view-bugs-setup
 type: setup
-version: 1.0.0
+version: 1.1.0
 collection: bug-reports
 description: Setup for the view-bugs skill — validates admin role access and remote filesystem connectivity.
 target: view-bugs

@@ -1,7 +1,7 @@
 ---
 name: forward-bug
 type: task
-version: 1.0.0
+version: 1.1.0
 collection: bug-reports
 description: Forward a selected bug report to the agent-index log collection server. Admin-only — packages the bug into the log collector's expected payload format and sends it via HTTP.
 stateful: true
