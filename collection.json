@@ -13,6 +13,26 @@
     "forward-bug",
     "bug-reports-tutorial"
   ],
+  "provides": [
+    {
+      "capability": "bug-reporting",
+      "capability_version": "1.0.0",
+      "operations": {
+        "report-bug": {
+          "implemented_by": "report-bug",
+          "type": "task"
+        },
+        "view-bugs": {
+          "implemented_by": "view-bugs",
+          "type": "skill"
+        },
+        "forward-bug": {
+          "implemented_by": "forward-bug",
+          "type": "task"
+        }
+      }
+    }
+  ],
   "dependencies": [],
   "external_dependencies": [
     {
