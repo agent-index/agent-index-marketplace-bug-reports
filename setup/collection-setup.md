@@ -15,7 +15,7 @@ This setup is run by an org admin when installing the bug-reports collection. It
 
 ## Prerequisites
 
-- agent-index-filesystem MCP server connected and authenticated (test with `aifs_auth_status()`)
+- Remote filesystem access via `aifs_*` tools (test with `aifs_auth_status()`)
 - The org's `org-config.json` must have at least one org role defined (for designating admin roles)
 
 ---

@@ -26,7 +26,7 @@
     ]
   },
   "external_dependencies": [
-    "agent-index-filesystem MCP"
+    "Remote filesystem access"
   ],
   "optional_external_dependencies": [],
   "reads_from": "/shared/bug-reports/",

@@ -24,7 +24,7 @@ The workflow is:
 ## Prerequisites
 
 - agent-index-core 2.0.0 or later
-- agent-index-filesystem MCP server connected (for shared bug log access)
+- Remote filesystem access via `aifs_*` tools (for shared bug log access)
 - Python 3 (for the forwarding script)
 - At least one org role configured in `org-config.json` (for admin access control)
 

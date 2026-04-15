@@ -10,7 +10,7 @@ dependencies:
   skills: []
   tasks: []
 external_dependencies:
-  - agent-index-filesystem MCP
+  - Remote filesystem access
 ---
 
 ## About This Skill

@@ -11,7 +11,7 @@ dependencies:
   skills: []
   tasks: ["report-bug"]
 external_dependencies:
-  - agent-index-filesystem MCP
+  - Remote filesystem access
 reads_from: "/shared/bug-reports/"
 writes_to: "/shared/bug-reports/"
 ---
