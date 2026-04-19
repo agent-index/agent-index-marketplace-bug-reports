@@ -1,17 +1,17 @@
 {
   "name": "bug-reports",
   "display_name": "Bug Reports",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Bug reporting workflow — any member can submit bugs, org admins can review, triage, and forward selected reports to the agent-index log collection server.",
   "author": "agent-index",
   "license": "open",
   "category": "developer-tools",
   "agent_index_min_version": "3.0.0",
   "api": [
-    "report-bug",
-    "view-bugs",
-    "forward-bug",
-    "bug-reports-tutorial"
+    {"name":"report-bug","triggers":[{"phrase":"report a bug","capability":"report-bug","description":"Submit a new bug report"},{"phrase":"found a bug","capability":"report-bug","description":"Log a bug you discovered"},{"phrase":"log a bug","capability":"report-bug","description":"Record a bug for tracking"},{"phrase":"something is broken","capability":"report-bug","description":"Report an issue or malfunction"}]},
+    {"name":"view-bugs","triggers":[{"phrase":"what bugs do we have","capability":"view-bugs","description":"View the current bug list"},{"phrase":"show bugs","capability":"view-bugs","description":"Display reported bugs"},{"phrase":"open bugs","capability":"view-bugs","description":"List unresolved bug reports"},{"phrase":"bug list","capability":"view-bugs","description":"Show all tracked bugs"}]},
+    {"name":"forward-bug","triggers":[{"phrase":"forward this bug","capability":"forward-bug","description":"Send a bug report to the log collection server"},{"phrase":"submit bug to agent-index","capability":"forward-bug","description":"Forward a bug report upstream"}]},
+    {"name":"bug-reports-tutorial","triggers":[{"phrase":"how do bug reports work","capability":"bug-reports-tutorial","description":"Learn how to use the bug reporting system"}]}
   ],
   "provides": [
     {
