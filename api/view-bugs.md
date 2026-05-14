@@ -1,7 +1,7 @@
 ---
 name: view-bugs
 type: skill
-version: 1.1.0
+version: 1.2.0
 collection: bug-reports
 description: Interactive admin interface for viewing, filtering, and triaging bug reports. Admins can browse all submitted bugs, update status, add notes, and select bugs for forwarding.
 stateful: true
@@ -27,7 +27,22 @@ When the member invokes this skill:
 
 1. **Check admin access.** Read `collection-setup-responses.md` via `aifs_read` to get `admin_roles` and `bug_log_path`. Read the members registry via `aifs_read("/members-registry.json")` and look up the current member's `org_role`. If their role is not in `admin_roles`, respond: "Bug report admin access is restricted to {admin_roles} roles. You can submit bugs with '@ai:report-bug'." and exit.
 
-2. **Load the manifest.** Read `{bug_log_path}/bug-manifest.json` via `aifs_read`. Parse the `bugs` array.
+2. **Load and reconcile the manifest.** (Reconcile-on-read added in v1.2.0; closes bug `20260513-8d20ea22`.) The manifest is a denormalized cache of the individual bug files under `{bug_log_path}/bugs/*.md`. Writers (this skill's status-update path, `report-bug`, ad-hoc edits via other sessions) are supposed to keep both in sync, but in practice the manifest drifts: new bug files don't get inserted, status changes on individual files don't get reflected in the manifest. Trusting the manifest blindly produces stale reports — a known bug.
+
+   To prevent this, view-bugs **always reconciles before rendering**:
+
+   1. `aifs_list("{bug_log_path}/bugs/")` to enumerate every `.md` file.
+   2. For each, `aifs_read("{bug_log_path}/bugs/{filename}")` and parse the YAML frontmatter (id, title, collection, severity, status, reporter, reported_date, forwarded_date, closed_date).
+   3. Build the canonical bug list from those individual files. This is the authoritative source.
+   4. `aifs_read("{bug_log_path}/bug-manifest.json")` (best-effort; tolerate missing/corrupt — treat as `{ bugs: [] }`).
+   5. Diff the canonical list against the manifest's `bugs` array. If they differ in any way (missing entries, extra entries, status mismatches, title mismatches): rebuild the manifest from the canonical list and write it back via `aifs_write("{bug_log_path}/bug-manifest.json", ...)`. Set `last_updated` to the current ISO timestamp.
+   6. Surface a one-line notice if a reconcile actually rewrote the manifest: "Reconciled bug-manifest.json — {N_added} added, {N_status_changed} status changes, {N_removed} removed from manifest." (Suppress this notice in the cleanly-aligned case.)
+
+   **Cost.** One `aifs_list` plus N `aifs_read` calls per view-bugs invocation, where N is the bug count. For a typical install with 10–50 bugs, that's bounded and fast (parallel reads finish in 1–3 seconds). View-bugs runs interactively so the cost is acceptable.
+
+   **Failure tolerance.** If individual file reads fail (network, malformed frontmatter), still attempt to render from the partial reconciliation and surface the failures. Do NOT write a half-reconciled manifest back — leave the old manifest in place if any read failed, surface the issue, ask the admin to retry.
+
+   Proceed with the reconciled bugs list (in memory) for the rest of this skill's operations.
 
 3. **Show summary.** Display a summary of the current bug log:
    - Total bugs: {count}
