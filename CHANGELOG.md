@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.1] — 2026-06-01
+
+### Fixed
+
+- **Removed the broken `config/` restriction entry from `collaborative-acls.json`.** The 1.3.0 entry tried to hide `config/auth-key.txt` from members with `{op: share, recipient: all@, role: reader, inherit: false}`. That is the wrong primitive: an `op: share` can only *add or re-assert* a grant for its recipient — it can never *remove* `all@`'s access. Discovered live during dev_install provisioning (the op terminated without effect; `all@` remained a reader on `config/`). The `bugs/` writer grant (the actual non-admin-write feature) is correct and unaffected. The `config/` auth-key hardening — which requires disabling inheritance and granting **only admins** (dropping `all@`), not a share — is tracked separately as bug `20260601-8d20ea22` and will ship as its own properly-rehearsed change.
+
+### Notes
+
+- `collection.json` 1.3.0 → 1.3.1. Per-capability manifest `collection_version` reconciles to 1.3.1 on members' next `apply-updates` (manifest-sync subroutine). No capability `.md`/logic changes in this patch — `collaborative-acls.json` only.
+
+---
+
 ## [1.3.0] — 2026-05-31
 
 ### Fixed
