@@ -1,9 +1,9 @@
 ---
 name: report-bug
 type: task
-version: 1.1.0
+version: 1.2.0
 collection: bug-reports
-description: Walk a member through submitting a bug report — collect details about the issue, severity, and reproduction steps, then write the report as an individual file and update the manifest index.
+description: Walk a member through submitting a bug report — collect details about the issue, severity, and reproduction steps, then write the report as an individual file. The shared index is maintained by view-bugs (reconcile-on-read), not this task.
 stateful: true
 produces_artifacts: false
 produces_shared_artifacts: true
@@ -13,12 +13,12 @@ dependencies:
 external_dependencies:
   - Remote filesystem access
 reads_from: "/shared/bug-reports/"
-writes_to: "/shared/bug-reports/"
+writes_to: "/shared/bug-reports/bugs/"
 ---
 
 ## About This Task
 
-Report Bug is the submission task available to every member in the org. It interviews the member about the bug they encountered, collects structured information (which collection, what happened, steps to reproduce, severity), generates a unique bug ID, writes the report as an individual markdown file on the remote filesystem, and updates the manifest index so the bug is discoverable by admins.
+Report Bug is the submission task available to every member in the org. It interviews the member about the bug they encountered, collects structured information (which collection, what happened, steps to reproduce, severity), generates a collision-free bug ID, and writes the report as an individual markdown file on the remote filesystem. The bug file is the source of truth; the shared index (`bug-manifest.json`) is rebuilt from the bug files by the admin-only `view-bugs` skill (reconcile-on-read, v1.2.0+), so this task never writes the manifest. Members are granted writer on `bugs/` only — provisioned at collection install via `collaborative-acls.json`.
 
 No special role is required — any org member can report a bug.
 
@@ -78,9 +78,9 @@ Ask: "Anything else worth noting? Error messages, screenshots you can describe, 
 
 ### Step 3 — Generate Bug ID
 
-Create a unique bug ID using the format: `{YYYYMMDD}-{first 8 chars of member_hash}`.
+Create a collision-free bug ID using the format: `{YYYYMMDD}-{first 8 chars of member_hash}-{HHMMSS}-{4 random lowercase hex}` (UTC time-of-day plus a short random token as the suffix).
 
-If a bug with that exact ID already exists in the manifest (the member submitted another bug today), append a sequential suffix: `-2`, `-3`, etc. Check the manifest via `aifs_read("{bug_log_path}/bug-manifest.json")` to verify uniqueness.
+The `member_hash` component guarantees no collision between different members; `{HHMMSS}` plus the 4-hex random token guarantees no collision even if the same member files more than one bug in the same second. Because the ID is unique by construction, **do not read `bug-manifest.json` and do not list `bugs/`** — the member's write path is a single `aifs_write` and must not depend on reading shared state (members have writer on `bugs/`, but read-before-write would couple this task to listing/inheritance behavior we deliberately avoid).
 
 ### Step 4 — Confirm With Member
 
@@ -137,33 +137,9 @@ closed_date: null
 (none)
 ```
 
-Write the file via `aifs_write("{bug_log_path}/bugs/{id}.md", content)`.
+Write the file via `aifs_write("{bug_log_path}/bugs/{id}.md", content)`. This is the only write this task performs — it does **not** touch `bug-manifest.json` (see About: `view-bugs` reconciles the index from the bug files).
 
-### Step 6 — Update Manifest
-
-Read the manifest from `{bug_log_path}/bug-manifest.json` via `aifs_read`. Parse it as JSON.
-
-Add a new entry to the `bugs` array:
-
-```json
-{
-  "id": "{id}",
-  "title": "{title}",
-  "collection": "{collection}",
-  "severity": "{severity}",
-  "status": "open",
-  "reporter_hash": "{member_hash}",
-  "reported_date": "{DATE}",
-  "forwarded_date": null,
-  "closed_date": null
-}
-```
-
-Update `last_updated` to the current ISO timestamp.
-
-Write the updated manifest back via `aifs_write("{bug_log_path}/bug-manifest.json", content)`.
-
-### Step 7 — Confirm Submission
+### Step 6 — Confirm Submission
 
 Tell the member: "Bug {id} has been submitted. Your org admin can see it in the bug log and forward it to agent-index if needed. You can check on it by asking an admin to run '@ai:view-bugs'."
 
@@ -172,8 +148,9 @@ Tell the member: "Bug {id} has been submitted. Your org admin can see it in the 
 ## Directives
 
 - Any member can run this task regardless of their org role.
-- Never modify existing bug files — only create new ones.
-- Never delete bug files or truncate the manifest.
+- Never modify existing bug files — only create new ones. (Members update their *own* bugs via `@ai:update-bug`, not this task.)
+- Never delete bug files.
+- This task never reads or writes `bug-manifest.json`. The index is admin-maintained by `view-bugs` (reconcile-on-read).
 - Always confirm the report with the member before writing (Step 4).
 - If the remote filesystem is unavailable, do not attempt to write locally as a fallback — the bug log must be on the shared filesystem so admins can see it. Halt and explain.
 - Use `aifs_read` and `aifs_write` for all remote file operations — never native Read/Write.
@@ -182,8 +159,6 @@ Tell the member: "Bug {id} has been submitted. Your org admin can see it in the 
 
 ## Error Handling
 
-- If remote filesystem access fails at any step: halt and instruct the member to check their connection. Do not lose the collected bug details — offer to retry once connectivity is restored.
-- If the `bugs/` directory doesn't exist at `{bug_log_path}/bugs/`: create it before writing the bug file.
-- If the manifest doesn't exist at `{bug_log_path}/bug-manifest.json`: create it with the base schema before adding the entry.
-- If writing the bug file succeeds but the manifest write fails: inform the member that the bug was saved but the index may be out of sync. The bug file still exists at `{bug_log_path}/bugs/{id}.md` and an admin can re-index manually.
+- If remote filesystem access fails at any step (auth/connectivity): halt and instruct the member to check their connection or run `@ai:member-bootstrap`. Do not lose the collected bug details — offer to retry once connectivity is restored.
+- **If the `aifs_write` to `bugs/` fails with a permission/authorization error (NOT an auth/connectivity error):** the member has not been granted writer on the shared bug log. Surface: "You don't appear to have write access to the shared bug log. This is an org setup step — ask your admin to run `@ai:install-collection bug-reports` to provision member write access, then try again." Do **not** route the member to `@ai:member-bootstrap` (that is for auth/connectivity, not authorization). Preserve the collected details for retry.
 - If the member abandons the interview partway through: do not write anything. Incomplete bugs are not submitted.

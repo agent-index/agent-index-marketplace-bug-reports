@@ -1,8 +1,8 @@
 {
   "name": "bug-reports",
   "display_name": "Bug Reports",
-  "version": "1.2.0",
-  "description": "Bug reporting workflow — any member can submit bugs, org admins can review, triage, and forward selected reports to the agent-index log collection server. v1.2.0: view-bugs always reconciles bug-manifest.json from individual bug files on read (closes bug 20260513-8d20ea22) — eliminates the long-standing class where the manifest drifted from the bugs/*.md sources because writers didn’t reliably keep both in sync. v1.1.x: original bug-report + view-bugs + forward-bug skill set.",
+  "version": "1.3.0",
+  "description": "Bug reporting workflow — any member can submit and update their own bugs, org admins can review, triage, and forward selected reports to the agent-index log collection server. v1.3.0: non-admin write access — report-bug uses collision-free IDs and no longer writes the manifest; new update-bug task lets members revise their own bugs (ownership-enforced); collaborative-acls.json declares the all@ writer grant on bugs/ (+ config/ restriction) provisioned at install via install-collection Step 5.5 (closes bug 20260531-8d20ea22). v1.2.0: view-bugs always reconciles bug-manifest.json from individual bug files on read (closes bug 20260513-8d20ea22). v1.1.x: original bug-report + view-bugs + forward-bug skill set.",
   "author": "agent-index",
   "license": "open",
   "category": "developer-tools",
@@ -30,6 +30,26 @@
           "phrase": "something is broken",
           "capability": "report-bug",
           "description": "Report an issue or malfunction"
+        }
+      ]
+    },
+    {
+      "name": "update-bug",
+      "triggers": [
+        {
+          "phrase": "update my bug",
+          "capability": "update-bug",
+          "description": "Add detail to or revise a bug you reported"
+        },
+        {
+          "phrase": "add detail to my bug report",
+          "capability": "update-bug",
+          "description": "Append more information to your bug"
+        },
+        {
+          "phrase": "my bug is still happening",
+          "capability": "update-bug",
+          "description": "Confirm a bug you filed is still occurring"
         }
       ]
     },
@@ -91,6 +111,10 @@
       "operations": {
         "report-bug": {
           "implemented_by": "report-bug",
+          "type": "task"
+        },
+        "update-bug": {
+          "implemented_by": "update-bug",
           "type": "task"
         },
         "view-bugs": {

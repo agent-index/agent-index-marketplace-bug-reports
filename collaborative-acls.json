@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "description": "Declares the ACLs bug-reports needs on its collaborative folders. Read by install-collection Step 5.5 and provisioned via the permission-change-helper skill (admin reviews + Accepts). Never applied by aifs_share directly. {param} placeholders are resolved at provisioning time from collection-setup-responses.md and org-config.json.",
+  "acls": [
+    {
+      "path": "{bug_log_path}/bugs/",
+      "recipient": "{all_members_group}",
+      "role": "writer",
+      "inherit": true,
+      "rationale": "Every member files bugs into bugs/ via report-bug. Unique-by-construction filenames mean no write contention. Additive grant on top of the parent all@ reader; new bug files inherit it."
+    },
+    {
+      "path": "{bug_log_path}/config/",
+      "recipient": "{all_members_group}",
+      "role": "reader",
+      "inherit": false,
+      "restrict": true,
+      "rationale": "Detach config/ from the broad /shared all@ reader inheritance so the log-server auth key (config/auth-key.txt) is NOT member-readable. inherit:false applied directly on config/ (requires organizer/owner; admin has it). Admin retains access via ownership; forward-bug (admin-only) still reads the key. Requires permission-helper-go >= 0.3.0."
+    }
+  ]
+}

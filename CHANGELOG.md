@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.3.0] — 2026-05-31
+
+### Fixed
+
+- **Non-admin members can now file and update bugs** (closes bug `20260531-8d20ea22`). Under the least-privilege access model (core 3.1.0+), non-admin members are reader-only on `/shared`, so `report-bug` — explicitly an every-member task — failed at the `aifs_write` to `/shared/bug-reports/bugs/` for everyone except the admin, and misreported the permission failure as an auth/connectivity problem. This release closes that gap.
+
+### Added
+
+- **`collaborative-acls.json`** (new, collection root) — declares the ACLs the collection needs: `all@{domain}` **writer** on `bugs/` (additive, `inherit:true`) and an `inherit:false` reader restriction on `config/` so the log-server auth key is no longer member-readable. Provisioned by the admin at install time via `install-collection` Step 5.5 (agent-index-marketplace 2.1.0), routed through `permission-change-helper` — never `aifs_share` directly. Requires `permission-helper-go ≥ 0.3.0` for the `config/` restriction.
+- **`update-bug` task** (new, 1.0.0) — member-facing, ownership-enforced: a member may revise or add detail to a bug **they reported**. Status changes remain admin-only (`view-bugs`). Ownership is enforced in task logic (folder-level writer grant; soft boundary — documented in the task).
+
+### Changed
+
+- **`report-bug` 1.1.0 → 1.2.0:** collision-free IDs (`{date}-{hash8}-{HHMMSS}-{4hex}`) generated without reading shared state; **no longer writes `bug-manifest.json`** (the index is rebuilt by `view-bugs` reconcile-on-read, shipped in 1.2.0); authorization-specific error message that directs members to ask an admin to run `@ai:install-collection bug-reports` rather than the wrong `@ai:member-bootstrap` path. `writes_to` narrowed to `/shared/bug-reports/bugs/`.
+- **`view-bugs`** unchanged in behavior — its 1.2.0 reconcile-on-read already makes the member-never-writes-the-manifest model work.
+
+### Notes
+
+- `collection.json` 1.2.0 → 1.3.0; all API manifests' `collection_version` → 1.3.0.
+- **Provisioning is an admin action** and requires an interactive `permission-change-helper` Accept. After upgrading, the admin runs `@ai:install-collection bug-reports` once to provision member write access (idempotent; safe to re-run as backfill). Until provisioned, non-admins still cannot write — no regression vs. prior behavior, but now with a clear error message.
+
+---
+
 ## [1.2.0] — 2026-05-13
 
 ### Fixed

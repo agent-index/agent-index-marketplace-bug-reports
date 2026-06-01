@@ -1,21 +1,20 @@
 {
-  "name": "report-bug",
+  "name": "update-bug",
   "type": "task",
-  "display_name": "Report Bug",
+  "display_name": "Update Bug",
   "collection": "bug-reports",
   "collection_version": "1.3.0",
-  "version": "1.2.0",
+  "version": "1.0.0",
   "eol_date": null,
   "eol_warning_days": 60,
   "stateful": true,
   "produces_artifacts": false,
   "produces_shared_artifacts": true,
-  "setup_template": "report-bug-setup.md",
+  "setup_template": "update-bug-setup.md",
   "dependency_status": "complete",
   "missing_dependencies": [],
   "parameter_provenance": {
-    "bug_log_path": "org-mandated",
-    "severity_levels": "org-mandated"
+    "bug_log_path": "org-mandated"
   },
   "dependencies": {
     "skills": [],
@@ -25,6 +24,6 @@
     "Remote filesystem access"
   ],
   "optional_external_dependencies": [],
-  "reads_from": "/shared/bug-reports/",
+  "reads_from": "/shared/bug-reports/bugs/",
   "writes_to": "/shared/bug-reports/bugs/"
 }
