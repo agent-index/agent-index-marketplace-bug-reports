@@ -4,7 +4,7 @@ Bug reporting workflow for agent-index orgs. Any member can submit bug reports a
 
 ## Included Capabilities
 
-- **report-bug** (task) — Walk through submitting a bug report. Collects collection name, title, description, reproduction steps, and severity. Writes an individual bug file to the shared filesystem and updates the manifest index. Available to all members.
+- **report-bug** (task) — Walk through submitting a bug report. Collects collection name, title, description, reproduction steps, and severity. Writes an individual bug file to the shared filesystem (the bug file is the source of truth; the admin-only view-bugs skill rebuilds the index from bug files — report-bug never writes the index). Available to all members.
 
 - **view-bugs** (skill) — Interactive admin interface for browsing, filtering, and managing bug reports. Supports filtering by status, severity, collection, and reporter. Admins can update status (open → acknowledged → forwarded → closed), add notes, and search across all reports. Admin roles only.
 

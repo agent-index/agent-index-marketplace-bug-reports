@@ -54,7 +54,7 @@ The workflow is simple: members report, admins review and triage, admins forward
 
 When you encounter a bug, say `@ai:report-bug`. Claude will interview you about what happened — which collection, what went wrong, what you expected, how to reproduce it, and how severe it is. You answer conversationally, one question at a time.
 
-After you answer, Claude summarizes the report back to you for confirmation. If it looks right, the report gets written to the shared bug log where your org admins can see it. You don't need to worry about formatting or organizing — Claude handles all of that.
+After you answer, Claude summarizes the report back to you for confirmation. If it looks right, the report gets written to the shared bug log. The log is an open commons — every member can read it (and your report is attributed to you), and org admins triage it. You don't need to worry about formatting or organizing — Claude handles all of that.
 
 Bug reports require no special permissions — any member can file one.
 

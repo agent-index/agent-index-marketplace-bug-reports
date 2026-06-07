@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.2] — 2026-06-06 — fleet docs hygiene (post-audit sweep)
+
+### Fixed (docs only)
+
+- README no longer claims report-bug "updates the manifest index" — the index is admin-rebuilt by view-bugs (reconcile-on-read, accurate since 1.2.0).
+- Tutorial visibility wording: the bug log is an open commons every member can read (with attribution), not an admins-only surface.
+- Tutorial setup template disambiguates the install path as the LOCAL workspace via native file tools (deprecated remote `/members/` spaces are not involved).
+- All capability manifests re-stamped with the correct `collection_version` (preflight Check 2 compliance).
+
 ## [1.3.1] — 2026-06-01
 
 ### Fixed
