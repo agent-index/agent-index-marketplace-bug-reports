@@ -41,9 +41,15 @@ This task reads its configuration from `collection-setup-responses.md` at runtim
 
 ### Step 1 — Validate Admin Access
 
-Read `collection-setup-responses.md` via `aifs_read` to get `admin_roles`, `bug_log_path`, and `log_server_url`.
+Resolve these reads by id anchor, never by bare path:
 
-Read the members registry via `aifs_read("/members-registry.json")` and look up the current member's `org_role`. If their role is not in `admin_roles`, respond: "Forwarding bugs is restricted to {admin_roles} roles. You can submit bugs with '@ai:report-bug'." and exit.
+1. Read `org_config_id` from the local `agent-index.json` (`remote_filesystem.connection.org_config_id`), then read org-config via `aifs_read("id:{org_config_id}")`. Keep it — Step 5 needs `org_hash` from it.
+2. From org-config take the `bug-reports` entry's `folder_id` in `installed_collections[]`, and `resource_ids.members_registry`.
+3. Read `aifs_read("id:{folder_id}/setup/collection-setup-responses.md")` to get `admin_roles`, `bug_log_path`, and `log_server_url`.
+
+Do not read `/org-config.json`, `/members-registry.json`, or `/bug-reports/...` by bare path. For a member who is not a Shared Drive member these return FILE_NOT_FOUND, or resolve `/bug-reports` to the same-named `/shared/bug-reports` data folder (`memberdupcollfolders`/`nameambig`; bug `20260921-8d20ea22-185412-c4e7`). If `org_config_id`, `folder_id`, or `members_registry` is missing, halt and name the missing value — do not fall back to a bare path.
+
+Read the members registry via `aifs_read("id:{members_registry}")` and look up the current member's `org_role`. If their role is not in `admin_roles`, respond: "Forwarding bugs is restricted to {admin_roles} roles. You can submit bugs with '@ai:report-bug'." and exit.
 
 ### Step 2 — Select Bug to Forward
 
@@ -108,7 +114,7 @@ Construct the log collector's expected JSON payload:
 
 Notes:
 - `run_id`: generate a UUID v4 for this forwarding event.
-- `org_hash`: read from `org-config.json` via `aifs_read("/org-config.json")` — use the org's identifier hash.
+- `org_hash`: take from the org-config already read by id anchor in Step 1 (never `aifs_read("/org-config.json")` — that bare path fails for non-Shared-Drive members) — use the org's identifier hash.
 - `member_hash`: use the original bug reporter's hash, not the admin's.
 - `agent_index_version`: read from the local agent-index-core version if available, otherwise use `"unknown"`.
 
