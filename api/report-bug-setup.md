@@ -17,7 +17,7 @@ Report Bug requires no member-specific configuration. All parameters (bug log pa
 
 ## Pre-Setup Checks
 
-- Collection setup has been completed (verify `collection-setup-responses.md` exists in the collection's setup directory via `aifs_read`) → if not: "Your org admin needs to complete the bug-reports collection setup first. Contact your admin."
+- Collection setup has been completed (verify `collection-setup-responses.md` exists at `id:{folder_id}/setup/collection-setup-responses.md`, where `folder_id` is the `bug-reports` entry in org-config's `installed_collections[]` and org-config is read via `aifs_read("id:{org_config_id}")` using `org_config_id` from the local `agent-index.json`. Never check a bare `/bug-reports/...` path: for a non-Shared-Drive member it resolves to the same-named `/shared/bug-reports` data folder and reports setup as incomplete when it is not) → if not: "Your org admin needs to complete the bug-reports collection setup first. Contact your admin."
 - Remote filesystem is accessible (test with `aifs_auth_status()`) → if not: "Please check your remote filesystem connection or run '@ai:member-bootstrap'."
 
 ---

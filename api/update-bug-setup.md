@@ -17,7 +17,7 @@ Update Bug requires no member-specific configuration. It uses the org-mandated `
 
 ## Pre-Setup Checks
 
-- Collection setup completed (verify `collection-setup-responses.md` exists via `aifs_read`) → if not: "Your org admin needs to complete the bug-reports collection setup first."
+- Collection setup completed (verify `collection-setup-responses.md` exists at `id:{folder_id}/setup/collection-setup-responses.md`, where `folder_id` is the `bug-reports` entry in org-config's `installed_collections[]` and org-config is read via `aifs_read("id:{org_config_id}")` using `org_config_id` from the local `agent-index.json`. Never check a bare `/bug-reports/...` path: for a non-Shared-Drive member it resolves to the same-named `/shared/bug-reports` data folder and reports setup as incomplete when it is not) → if not: "Your org admin needs to complete the bug-reports collection setup first."
 - Remote filesystem accessible (`aifs_auth_status()`) → if not: "Please check your remote filesystem connection or run '@ai:member-bootstrap'."
 - Member write access to `bugs/` has been provisioned by the admin (collaborative-acls.json applied via `@ai:install-collection bug-reports`). If a later write fails with an authorization error, update-bug surfaces the admin-provisioning instruction at runtime.
 
