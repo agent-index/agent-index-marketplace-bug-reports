@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "description": "Declares the ADDITIVE collaborative-write grants bug-reports needs. Read by install-collection Step 5.5 and provisioned via the permission-change-helper skill (admin reviews + Accepts). Never applied by aifs_share directly. {param} placeholders are resolved at provisioning time from collection-setup-responses.md and org-config.json. NOTE: this file declares grants only (op:share). Access RESTRICTIONS (e.g. hiding config/auth-key.txt from members) are NOT expressible as a share and are tracked/handled separately — see bug 20260601-8d20ea22.",
+  "description": "Declares the ADDITIVE collaborative-write grants bug-reports needs. Read by install-collection Step 5.5 and provisioned through the core permission-changes procedure (the admin confirms the exact changes). Never applied by calling aifs_share directly. {param} placeholders are resolved at provisioning time from collection-setup-responses.md and org-config.json. NOTE: this file declares grants only (op:share). Access RESTRICTIONS (e.g. hiding config/auth-key.txt from members) are NOT expressible as a share and are tracked/handled separately — see bug 20260601-8d20ea22.",
   "acls": [
     {
       "path": "{bug_log_path}/bugs/",
