@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.1] — <RELEASE_DATE> — collaborative-acls description
+
+### Changed (docs only)
+- **`collaborative-acls.json`** description: grants are provisioned through the core permission-changes procedure (agent-index-core 3.32.0 / marketplace 2.22.0) instead of the retired permission-change-helper. No behaviour change. Part of retiring the helper (design record: `/shared/projects/core-improvements/artifacts/retire-permission-helper-*.md`).
+- Originally staged on `channel/dev-1` as 1.3.3; re-staged as 1.4.1 on top of the 1.4.0 hotfix (failed-forward recovery), which shipped from `main` first.
+
 ## [1.4.0] — 2026-10-06 — failed-forward recovery (log-server outage follow-up)
 
 ### Context
