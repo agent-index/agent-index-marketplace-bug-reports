@@ -1,7 +1,7 @@
 ---
 name: view-bugs
 type: skill
-version: 1.2.0
+version: 1.3.0
 collection: bug-reports
 description: Interactive admin interface for viewing, filtering, and triaging bug reports. Admins can browse all submitted bugs, update status, add notes, and select bugs for forwarding.
 stateful: true
@@ -32,7 +32,7 @@ When the member invokes this skill:
    To prevent this, view-bugs **always reconciles before rendering**:
 
    1. `aifs_list("{bug_log_path}/bugs/")` to enumerate every `.md` file.
-   2. For each, `aifs_read("{bug_log_path}/bugs/{filename}")` and parse the YAML frontmatter (id, title, collection, severity, status, reporter, reported_date, forwarded_date, closed_date).
+   2. For each, `aifs_read("{bug_log_path}/bugs/{filename}")` and parse the YAML frontmatter (id, title, collection, severity, status, reporter, reported_date, forwarded_date, closed_date, forward_failed_at). `forward_failed_at` (1.3.0) is set by `forward-bug` 1.2.0+ when a forward attempt fails and cleared when one succeeds; carry it into the manifest and treat a mismatch on it like a status mismatch.
    3. Build the canonical bug list from those individual files. This is the authoritative source.
    4. `aifs_read("{bug_log_path}/bug-manifest.json")` (best-effort; tolerate missing/corrupt — treat as `{ bugs: [] }`).
    5. Diff the canonical list against the manifest's `bugs` array. If they differ in any way (missing entries, extra entries, status mismatches, title mismatches): rebuild the manifest from the canonical list and write it back via `aifs_write("{bug_log_path}/bug-manifest.json", ...)`. Set `last_updated` to the current ISO timestamp.
@@ -49,13 +49,15 @@ When the member invokes this skill:
    - Open: {count} | Acknowledged: {count} | Forwarded: {count} | Closed: {count}
    - By severity: Critical: {n}, High: {n}, Medium: {n}, Low: {n}
    - Most recent: "{title}" ({id}, {severity}, {reported_date})
+   - If any open/acknowledged bug has `forward_failed_at`: "⚠ {N} bug(s) failed to forward to agent-index — say 'retry failed forwards' to resend." (Routes to `forward-bug`.)
 
 4. **Ask what the admin wants to do.**
 
 ### Supported Operations
 
 **List bugs (with filters)**
-Show all bugs, or filter by status, severity, collection, or reporter. For each bug, display: ID, title, collection, severity, status, reporter display_name, and reported date. Keep it compact — one line per bug.
+Show all bugs, or filter by status, severity, collection, or reporter. For each bug, display: ID, title, collection, severity, status, reporter display_name, and reported date. Append "⚠ forward failed" to any bug with `forward_failed_at`. Keep it compact — one line per bug.
+- "Show bugs that failed to forward" → filter `forward_failed_at` set
 - "Show me all open bugs" → filter status=open
 - "Show critical bugs" → filter severity=critical
 - "Show bugs in email-triage" → filter collection=email-triage

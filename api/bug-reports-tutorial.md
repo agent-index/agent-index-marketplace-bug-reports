@@ -72,7 +72,7 @@ The view-bugs skill is admin-only — only members whose org role matches the co
 
 When your org wants to escalate a bug to the agent-index team, an admin runs `@ai:forward-bug` to send the report upstream. The task packages the bug into the format the agent-index log server expects, authenticates, and sends it.
 
-Once a bug is forwarded, it's marked as such in your shared log. The admin notes field will show when it was forwarded and what the upstream server reference is.
+Once a bug is forwarded, it's marked as such in your shared log. The admin notes field will show when it was forwarded and what the upstream server reference is. If a forward fails (for example, the agent-index server is temporarily down), the bug stays in its current status and is flagged as a failed forward — say "retry failed forwards" later to resend it. A server-side failure is never a problem with your org's key, so don't change the key unless forward-bug specifically reports an authentication failure.
 
 Forwarding is admin-only and always requires explicit confirmation before sending.
 
