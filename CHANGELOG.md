@@ -1,9 +1,33 @@
 # Changelog
 
-## [1.3.3] — 2026-10-02 — collaborative-acls description
+## [1.4.0] — 2026-10-06 — failed-forward recovery (log-server outage follow-up)
 
-### Changed (docs only)
-- **`collaborative-acls.json`** description: grants are provisioned through the core permission-changes procedure (agent-index-core 3.32.0 / marketplace 2.22.0) instead of the retired permission-change-helper. No behaviour change. Part of retiring the helper (design record: `/shared/projects/core-improvements/artifacts/retire-permission-helper-*.md`).
+### Context
+
+The agent-index log server rejected **every** submission from 2026-07-11 to 2026-10-05: its API-key config was deleted by an S3 lifecycle rule, and the server answered `403 invalid API key` instead of a server error. `forward-bug` ≤1.1.0 recorded nothing on failure and told admins "The API key may be invalid or expired. Contact your org admin to update the key" — so failed forwards left no trace, and some admins may have changed a key that was correct. The server is fixed (it now returns `503` when it can't load its key config, and is monitored). This release makes the client side recoverable.
+
+### Added
+
+- **`forward-bug` 1.1.0 → 1.2.0: failed attempts are recorded on the bug** — `forward_failed_at`, `forward_last_error`, `forward_attempts` in frontmatter, an admin note, and `forward_failed_at` on the manifest entry. Status is left unchanged. Cleared on the next successful forward.
+- **"retry failed forwards"** — new trigger; `forward-bug` leads with pending retries and resends them as one confirmed batch, stopping at the first auth/network failure.
+- **Outage-window notice** — once per session, `forward-bug` points out unforwarded open/acknowledged bugs reported 2026-07-01..2026-10-05 and offers to review them (never auto-forwards).
+- **Default-key check** — if `{bug_log_path}/config/auth-key.txt` differs from `log_collector_api_key` in `agent-index.json`, `forward-bug` says so and offers to restore the community key (enterprise keys are legitimate, so it never forces it).
+- **`view-bugs` 1.2.0 → 1.3.0** — reconcile carries `forward_failed_at` into the manifest; summary and list flag failed forwards; new "show bugs that failed to forward" filter.
+
+### Changed
+
+- **`apps/forward-bug.py`: classified exit codes** — `1 local`, `2 auth` (401/403), `3 server` (5xx), `4 network`, `5 payload` (413/other 4xx); stderr is one `"<class>: <detail>"` line. Previously every failure was exit 1.
+- **Transient failures are retried** twice (5s, 15s backoff) for 5xx and network errors. `--no-retry` disables this.
+- **Error messages:** a 5xx/network failure now explicitly says it is *not* a key problem and not to change anything; only an `auth` failure points at the key, and it points at the specific file to compare rather than "contact your admin". New directive: never advise a key change for server/network failures.
+
+### Notes
+
+- `collection.json` 1.3.2 → 1.4.0 (hotfix from main; the docs-only 1.3.3 staged on `channel/dev-1` re-stages on top as 1.4.1); all API manifests' `collection_version` → 1.4.0.
+- **Also ships CI-010 (PR #1, merged unversioned):** `forward-bug`, `view-bugs`, `report-bug`, `update-bug` and their setup templates read org-config, the members registry and collection setup by id anchor instead of bare path (bug `20260921-8d20ea22-185412-c4e7`).
+- No schema migration: the new frontmatter fields are optional and absent on existing bugs. No ACL changes.
+- **After upgrading, admins should run `@ai:forward-bug`** — the outage notice will list bugs from the affected window.
+
+---
 
 ## [1.3.2] — 2026-06-06 — fleet docs hygiene (post-audit sweep)
 
@@ -80,4 +104,4 @@
 - `forward-bug` task — forward bugs to the agent-index log collection server
 - Collection setup with configurable admin roles, severity levels, and log server endpoint
 - Shared markdown bug log with YAML frontmatter and JSON manifest index
-- Python forwarding script (`forward-bug.py`) for HTTP delivery to log collector
+- Python forwarding script (`forward-bug.py`) for HTTP delivery to log collector.

@@ -36,7 +36,14 @@ Reads `collection-setup-responses.md` at runtime for `bug_log_path`. No member-d
 
 ### Step 1 — Load Configuration & Identity
 
-Read `collection-setup-responses.md` via `aifs_read` for `bug_log_path`. Read `/members-registry.json` via `aifs_read` to resolve the current member's `member_hash` and `display_name`.
+Resolve both reads by id anchor, never by bare path:
+
+1. Read `org_config_id` from the local `agent-index.json` (`remote_filesystem.connection.org_config_id`), then read org-config via `aifs_read("id:{org_config_id}")`.
+2. From org-config take the `bug-reports` entry's `folder_id` in `installed_collections[]`, and `resource_ids.members_registry`.
+3. Read `aifs_read("id:{folder_id}/setup/collection-setup-responses.md")` for `bug_log_path`.
+4. Read the members registry via `aifs_read("id:{members_registry}")` to resolve the current member's `member_hash` and `display_name`.
+
+Do not read `/org-config.json`, `/members-registry.json`, or `/bug-reports/...` by bare path. For a member who is not a Shared Drive member these return FILE_NOT_FOUND, or resolve `/bug-reports` to the same-named `/shared/bug-reports` data folder (`memberdupcollfolders`/`nameambig`; bug `20260921-8d20ea22-185412-c4e7`). If `org_config_id`, `folder_id`, or `members_registry` is missing, halt and name the missing value — do not fall back to a bare path.
 
 If remote access fails (auth/connectivity): attempt `aifs_authenticate`; if still failing, halt with the standard connectivity message and `@ai:member-bootstrap` suggestion.
 

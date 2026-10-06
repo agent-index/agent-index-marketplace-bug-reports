@@ -1,7 +1,7 @@
 ---
 name: view-bugs
 type: skill
-version: 1.2.0
+version: 1.3.0
 collection: bug-reports
 description: Interactive admin interface for viewing, filtering, and triaging bug reports. Admins can browse all submitted bugs, update status, add notes, and select bugs for forwarding.
 stateful: true
@@ -25,14 +25,14 @@ View Bugs is the admin-facing interface for bug reports. It reads the shared man
 
 When the member invokes this skill:
 
-1. **Check admin access.** Read `collection-setup-responses.md` via `aifs_read` to get `admin_roles` and `bug_log_path`. Read the members registry via `aifs_read("/members-registry.json")` and look up the current member's `org_role`. If their role is not in `admin_roles`, respond: "Bug report admin access is restricted to {admin_roles} roles. You can submit bugs with '@ai:report-bug'." and exit.
+1. **Check admin access.** Resolve both reads by id anchor, never by bare path: read `org_config_id` from the local `agent-index.json` (`remote_filesystem.connection.org_config_id`) and read org-config via `aifs_read("id:{org_config_id}")`; take the `bug-reports` entry's `folder_id` in `installed_collections[]` and `resource_ids.members_registry`. Read `aifs_read("id:{folder_id}/setup/collection-setup-responses.md")` to get `admin_roles` and `bug_log_path`. Read the members registry via `aifs_read("id:{members_registry}")` and look up the current member's `org_role`. Do not read `/org-config.json`, `/members-registry.json`, or `/bug-reports/...` by bare path — for a non-Shared-Drive member they return FILE_NOT_FOUND or resolve to the same-named `/shared/bug-reports` data folder (`memberdupcollfolders`/`nameambig`; bug `20260921-8d20ea22-185412-c4e7`); if any id is missing, halt and name it rather than falling back. If their role is not in `admin_roles`, respond: "Bug report admin access is restricted to {admin_roles} roles. You can submit bugs with '@ai:report-bug'." and exit.
 
 2. **Load and reconcile the manifest.** (Reconcile-on-read added in v1.2.0; closes bug `20260513-8d20ea22`.) The manifest is a denormalized cache of the individual bug files under `{bug_log_path}/bugs/*.md`. Writers (this skill's status-update path, `report-bug`, ad-hoc edits via other sessions) are supposed to keep both in sync, but in practice the manifest drifts: new bug files don't get inserted, status changes on individual files don't get reflected in the manifest. Trusting the manifest blindly produces stale reports — a known bug.
 
    To prevent this, view-bugs **always reconciles before rendering**:
 
    1. `aifs_list("{bug_log_path}/bugs/")` to enumerate every `.md` file.
-   2. For each, `aifs_read("{bug_log_path}/bugs/{filename}")` and parse the YAML frontmatter (id, title, collection, severity, status, reporter, reported_date, forwarded_date, closed_date).
+   2. For each, `aifs_read("{bug_log_path}/bugs/{filename}")` and parse the YAML frontmatter (id, title, collection, severity, status, reporter, reported_date, forwarded_date, closed_date, forward_failed_at). `forward_failed_at` (1.3.0) is set by `forward-bug` 1.2.0+ when a forward attempt fails and cleared when one succeeds; carry it into the manifest and treat a mismatch on it like a status mismatch.
    3. Build the canonical bug list from those individual files. This is the authoritative source.
    4. `aifs_read("{bug_log_path}/bug-manifest.json")` (best-effort; tolerate missing/corrupt — treat as `{ bugs: [] }`).
    5. Diff the canonical list against the manifest's `bugs` array. If they differ in any way (missing entries, extra entries, status mismatches, title mismatches): rebuild the manifest from the canonical list and write it back via `aifs_write("{bug_log_path}/bug-manifest.json", ...)`. Set `last_updated` to the current ISO timestamp.
@@ -49,13 +49,15 @@ When the member invokes this skill:
    - Open: {count} | Acknowledged: {count} | Forwarded: {count} | Closed: {count}
    - By severity: Critical: {n}, High: {n}, Medium: {n}, Low: {n}
    - Most recent: "{title}" ({id}, {severity}, {reported_date})
+   - If any open/acknowledged bug has `forward_failed_at`: "⚠ {N} bug(s) failed to forward to agent-index — say 'retry failed forwards' to resend." (Routes to `forward-bug`.)
 
 4. **Ask what the admin wants to do.**
 
 ### Supported Operations
 
 **List bugs (with filters)**
-Show all bugs, or filter by status, severity, collection, or reporter. For each bug, display: ID, title, collection, severity, status, reporter display_name, and reported date. Keep it compact — one line per bug.
+Show all bugs, or filter by status, severity, collection, or reporter. For each bug, display: ID, title, collection, severity, status, reporter display_name, and reported date. Append "⚠ forward failed" to any bug with `forward_failed_at`. Keep it compact — one line per bug.
+- "Show bugs that failed to forward" → filter `forward_failed_at` set
 - "Show me all open bugs" → filter status=open
 - "Show critical bugs" → filter severity=critical
 - "Show bugs in email-triage" → filter collection=email-triage
