@@ -8,7 +8,7 @@ Bug reporting workflow for agent-index orgs. Any member can submit bug reports a
 
 - **view-bugs** (skill) — Interactive admin interface for browsing, filtering, and managing bug reports. Supports filtering by status, severity, collection, and reporter. Admins can update status (open → acknowledged → forwarded → closed), add notes, and search across all reports. Admin roles only.
 
-- **forward-bug** (task) — Forward a selected bug report to the upstream agent-index log collection server. Packages the bug into the log collector's expected JSON envelope, authenticates with the configured API key, and sends via HTTP. Marks the bug as forwarded in the shared log. Admin roles only.
+- **forward-bug** (task) — Forward a selected bug report to the upstream agent-index log collection server. Packages the bug into the log collector's expected JSON envelope, authenticates with the configured API key, and sends via HTTP. Marks the bug as forwarded in the shared log; if the send fails, records the failed attempt on the bug so it can be resent with "retry failed forwards". Admin roles only.
 
 - **bug-reports-tutorial** (skill) — Guided walkthrough of how the bug reporting system works. Explains concepts, workflows, and answers specific questions about filing and managing bugs. Say `@ai:bug-tutorial` to start.
 
