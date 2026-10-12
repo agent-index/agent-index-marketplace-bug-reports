@@ -45,6 +45,7 @@ The API key used to authenticate with the log collection server. Sent as a Beare
 - Default: the community key bundled with agent-index-core (read from the org's agent-index config if available)
 - Ask: "What API key should be used for the log collection server? If your org uses the community tier, you can use the bundled community key. Enterprise orgs should use their enterprise key."
 - Store this value on the **remote filesystem** at `{bug_log_path}/config/auth-key.txt` via `aifs_write`. Do not store it in the collection setup responses file — it's a secret.
+- **On a reconfigure** (`auth-key.txt` already exists): don't ask for a new key and don't write the default. Ask "Keep the current log server key? (yes / enter a new key)" and keep the existing file unless the admin enters a new key (`reconfigresetsdata`, Dev Two live test finding 30 — the default community key overwrote the configured one).
 
 ### `severity_levels` [org-mandated]
 The severity levels available when reporting bugs.
@@ -58,7 +59,7 @@ The severity levels available when reporting bugs.
 1. Validate remote filesystem access via `aifs_auth_status()`. If not authenticated, attempt `aifs_authenticate`. If that fails, halt and instruct the admin.
 2. Create the bug log directory at `{bug_log_path}` on the remote filesystem via `aifs_write`.
 3. Create the `bugs/` subdirectory at `{bug_log_path}/bugs/` via `aifs_write` (write a placeholder `.gitkeep` file if needed to create the directory).
-4. Write an empty `bug-manifest.json` at `{bug_log_path}/bug-manifest.json` via `aifs_write`:
+4. **Only if `{bug_log_path}/bug-manifest.json` doesn't exist** (`aifs_exists`), write an empty one via `aifs_write`. If it exists, keep it untouched and say "Kept the existing bug manifest ({n} bugs)." A reconfigure must never reset the index (`reconfigresetsdata`, finding 30):
    ```json
    {
      "version": "1.0.0",
@@ -66,7 +67,7 @@ The severity levels available when reporting bugs.
      "bugs": []
    }
    ```
-5. Write the auth key to `{bug_log_path}/config/auth-key.txt` via `aifs_write`.
+5. Write the auth key to `{bug_log_path}/config/auth-key.txt` via `aifs_write` — only when the file doesn't exist yet or the admin entered a new key (see `log_server_auth_key`).
 6. Write `collection-setup-responses.md` to `/setup/` with all configured parameters (except the auth key) in YAML format.
 7. Confirm to admin: "Bug Reports is set up. Members can submit bugs with '@ai:report-bug'. Admins with {admin_roles} roles can view bugs with '@ai:view-bugs' and forward them with '@ai:forward-bug'."
 
