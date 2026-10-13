@@ -5,6 +5,9 @@
 ### Fixed
 - **A reconfigure no longer resets `bug-manifest.json` or `auth-key.txt` (`reconfigresetsdata`, Dev Two live test finding 30).** Setup writes the empty manifest only when none exists, and keeps the existing log-server key unless the admin enters a new one. Bug files were never deleted, but the index was reset to `bugs: []` and an enterprise key was replaced by the community default.
 
+### License
+- Proprietary, as before: `LICENSE` added and the `collection.json` `license` field set to `proprietary` (it said `open`).
+
 ## [1.4.1] — <RELEASE_DATE> — collaborative-acls description
 
 ### Changed
