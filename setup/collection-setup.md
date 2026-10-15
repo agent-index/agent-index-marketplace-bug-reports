@@ -68,7 +68,7 @@ The severity levels available when reporting bugs.
    }
    ```
 5. Write the auth key to `{bug_log_path}/config/auth-key.txt` via `aifs_write` — only when the file doesn't exist yet or the admin entered a new key (see `log_server_auth_key`).
-6. Write `collection-setup-responses.md` to `/setup/` with all configured parameters (except the auth key) in YAML format.
+6. Write `collection-setup-responses.md` to `/setup/` with all configured parameters (except the auth key), in the canonical setup-responses format (core `org-setup` Phase 4b step 8: frontmatter with `setup_status: complete`, then `## Org-Mandated Parameters` with one `### {param_name}` / `- **Value:**` block per parameter) (finding 14).
 7. Confirm to admin: "Bug Reports is set up. Members can submit bugs with '@ai:report-bug'. Admins with {admin_roles} roles can view bugs with '@ai:view-bugs' and forward them with '@ai:forward-bug'."
 
 ---

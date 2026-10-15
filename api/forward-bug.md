@@ -1,7 +1,7 @@
 ---
 name: forward-bug
 type: task
-version: 1.2.0
+version: 1.2.1
 collection: bug-reports
 description: Forward a selected bug report to the agent-index log collection server. Admin-only — packages the bug into the log collector's expected payload format and sends it via HTTP.
 stateful: true
@@ -41,15 +41,15 @@ This task reads its configuration from `collection-setup-responses.md` at runtim
 
 ### Step 1 — Validate Admin Access
 
-Resolve these reads by id anchor, never by bare path:
+On gdrive, resolve these reads by id anchor, never by bare path (OneDrive: read `/org-config.json`, `/bug-reports/setup/collection-setup-responses.md` and `/members-registry.json` by path instead — a bare `id:` resolves against the caller's own drive there; backend from local `agent-index.json` `remote_filesystem.backend`; core standards § Addressing, finding 63):
 
 1. Read `org_config_id` from the local `agent-index.json` (`remote_filesystem.connection.org_config_id`), then read org-config via `aifs_read("id:{org_config_id}")`. Keep it — Step 5 needs `org_hash` from it.
 2. From org-config take the `bug-reports` entry's `folder_id` in `installed_collections[]`, and `resource_ids.members_registry`.
 3. Read `aifs_read("id:{folder_id}/setup/collection-setup-responses.md")` to get `admin_roles`, `bug_log_path`, and `log_server_url`.
 
-Do not read `/org-config.json`, `/members-registry.json`, or `/bug-reports/...` by bare path. For a member who is not a Shared Drive member these return FILE_NOT_FOUND, or resolve `/bug-reports` to the same-named `/shared/bug-reports` data folder (`memberdupcollfolders`/`nameambig`; bug `20260921-8d20ea22-185412-c4e7`). If `org_config_id`, `folder_id`, or `members_registry` is missing, halt and name the missing value — do not fall back to a bare path.
+On gdrive, do not read `/org-config.json`, `/members-registry.json`, or `/bug-reports/...` by bare path. For a member who is not a Shared Drive member these return FILE_NOT_FOUND, or resolve `/bug-reports` to the same-named `/shared/bug-reports` data folder (`memberdupcollfolders`/`nameambig`; bug `20260921-8d20ea22-185412-c4e7`). If `org_config_id`, `folder_id`, or `members_registry` is missing, halt and name the missing value — do not fall back to a bare path.
 
-Read the members registry via `aifs_read("id:{members_registry}")` and look up the current member's `org_role`. If their role is not in `admin_roles`, respond: "Forwarding bugs is restricted to {admin_roles} roles. You can submit bugs with '@ai:report-bug'." and exit.
+Read the members registry via `aifs_read("id:{members_registry}")` (OneDrive: `/members-registry.json` by path) and look up the current member's `org_role`. If their role is not in `admin_roles`, respond: "Forwarding bugs is restricted to {admin_roles} roles. You can submit bugs with '@ai:report-bug'." and exit.
 
 ### Step 2 — Select Bug to Forward
 
