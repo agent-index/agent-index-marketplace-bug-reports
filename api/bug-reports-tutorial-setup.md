@@ -29,9 +29,9 @@ No member-configurable parameters.
 
 ## Setup Completion
 
-1. Write the installed instance (using native file tools — this is the LOCAL workspace, not the deprecated remote `/members/` space) to `members/{member_hash}/skills/bug-reports-tutorial/`
+1. Write the installed instance (using native file tools — this is the LOCAL workspace, not the deprecated remote `/members/` space) to `members/{member_hash}/installed/bug-reports/skill/bug-reports-tutorial/`
 2. Write `manifest.json`
-3. Write empty `setup-responses.md`
+3. Write `setup-responses.md` in the canonical setup-responses format with no parameters: the frontmatter and all three `##` section headings, each empty (finding 14)
 4. Register entry in `member-index.json` with alias `@ai:bug-tutorial`
 5. Confirm to member: "Bug Reports Tutorial is installed. Say '@ai:bug-tutorial' anytime to learn how to report bugs."
 

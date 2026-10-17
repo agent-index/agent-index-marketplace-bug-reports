@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.3] — 2026-10-17 — setup-responses format
+
+### Fixed (4.0.1 pass — OneDrive and Google Drive live tests)
+- Setup writes its responses in the canonical setup-responses format; the tutorial's empty responses file carries the canonical sections and the collection-qualified install path (finding 14).
+- **OneDrive reads org-config, the registry and the setup responses by path** (report-bug 1.2.1, update-bug 1.0.1, forward-bug 1.2.1, view-bugs 1.3.1 and their setup checks); the id-only rules are gdrive-only (finding 63).
+
 ## [1.4.2] — 2026-10-13 — reconfigure keeps bug data
 
 ### Fixed
