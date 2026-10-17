@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.4.4] — <RELEASE_DATE> — standards.md citations re-pointed
+
+Pairs with core 4.1.0, which retires `standards.md`: forward-bug 1.2.2, report-bug 1.2.2, update-bug 1.0.2, view-bugs 1.3.2 and their setup files cite core `runtime-reference.md` § "Addressing: Owned Content and Sharing" for the backend read rule (finding 63). No behaviour change.
+
 ## [1.4.3] — 2026-10-17 — setup-responses format
 
 ### Fixed (4.0.1 pass — OneDrive and Google Drive live tests)
