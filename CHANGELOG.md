@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.4.3] — <RELEASE_DATE> — setup-responses format
+## [1.4.3] — 2026-10-17 — setup-responses format
 
 ### Fixed (4.0.1 pass — OneDrive and Google Drive live tests)
 - Setup writes its responses in the canonical setup-responses format; the tutorial's empty responses file carries the canonical sections and the collection-qualified install path (finding 14).
