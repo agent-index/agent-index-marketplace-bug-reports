@@ -1,7 +1,7 @@
 ---
 name: report-bug
 type: task
-version: 1.2.1
+version: 1.2.2
 collection: bug-reports
 description: Walk a member through submitting a bug report — collect details about the issue, severity, and reproduction steps, then write the report as an individual file. The shared index is maintained by view-bugs (reconcile-on-read), not this task.
 stateful: true
@@ -39,7 +39,7 @@ This task reads its configuration from `collection-setup-responses.md` at runtim
 
 ### Step 1 — Load Configuration
 
-On gdrive, resolve both reads by id anchor, never by bare path (OneDrive: read `/org-config.json`, `/bug-reports/setup/collection-setup-responses.md` and `/members-registry.json` by path instead — a bare `id:` resolves against the caller's own drive there; backend from local `agent-index.json` `remote_filesystem.backend`; core standards § Addressing, finding 63):
+On gdrive, resolve both reads by id anchor, never by bare path (OneDrive: read `/org-config.json`, `/bug-reports/setup/collection-setup-responses.md` and `/members-registry.json` by path instead — a bare `id:` resolves against the caller's own drive there; backend from local `agent-index.json` `remote_filesystem.backend`; core runtime-reference.md § "Addressing: Owned Content and Sharing", finding 63):
 
 1. Read `org_config_id` from the local `agent-index.json` (`remote_filesystem.connection.org_config_id`), then read org-config via `aifs_read("id:{org_config_id}")`.
 2. From org-config take the `bug-reports` entry's `folder_id` in `installed_collections[]`, and `resource_ids.members_registry`.
