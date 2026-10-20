@@ -31,7 +31,7 @@ Remote filesystem path where the shared bug log and manifest are stored.
 ### `admin_roles` [org-mandated]
 Which org roles have access to the `view-bugs` skill and `forward-bug` task. Members without a matching role can only use `report-bug`.
 - Ask: "Which org roles should have admin access to view, triage, and forward bug reports? These roles will be able to see all submitted bugs and forward them to agent-index."
-- Read `org-config.json` by backend (local `agent-index.json` `remote_filesystem.backend`): Google Drive `aifs_read("id:{org_config_id}")` with `org_config_id` from local `agent-index.json` `remote_filesystem.connection`; OneDrive `aifs_read("/org-config.json")` (core `runtime-reference.md` § "Addressing", finding 63; a bare path returns not found for an admin who isn't in the Shared Drive) — and present the available `org_roles` list. Let the admin select one or more.
+- Read `org-config.json` by backend (local `agent-index.json` `remote_filesystem.backend`): Google Drive `aifs_read("id:{org_config_id}")` with `org_config_id` from local `agent-index.json` `remote_filesystem.connection`; OneDrive `aifs_read("/org-config.json")` (core `runtime-reference.md` § "Addressing: Owned Content and Sharing", finding 63; a bare path returns not found for an admin who isn't in the Shared Drive) — and present the available `org_roles` list. Let the admin select one or more.
 - **If `org_roles` is empty, don't ask:** set `admin_roles: []` and tell the admin *"No org roles are defined, so only org admins can view, triage and forward bugs. Define roles with `@ai:edit-org` and re-run setup to widen access."* (`bugrolesprereq`, 3.32.0 live test.)
 - Store as an array of `role_id` strings.
 
