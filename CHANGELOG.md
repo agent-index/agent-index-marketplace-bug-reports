@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.5] — 2026-11-11 — setup reads org-config and writes its responses by backend
+
+Pairs with core 4.1.1 (Kallista Salak, bug-reports#6, CI-019).
+
+### Fixed
+- **Collection setup reads `org-config.json` by backend:** Google Drive `id:{org_config_id}`, OneDrive `/org-config.json`. A bare path returned not found for an admin outside the Shared Drive.
+- **Collection setup writes `collection-setup-responses.md` to this collection's own `setup/` folder** (Google Drive `id:{folder_id}/setup/`, OneDrive `/bug-reports/setup/`). It said `/setup/`, a folder at the drive root.
+
 ## [1.4.4] — 2026-10-17 — standards.md citations re-pointed
 
 Pairs with core 4.1.0, which retires `standards.md`: forward-bug 1.2.2, report-bug 1.2.2, update-bug 1.0.2, view-bugs 1.3.2 and their setup files cite core `runtime-reference.md` § "Addressing: Owned Content and Sharing" for the backend read rule (finding 63). No behaviour change.
