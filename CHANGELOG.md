@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.4.5] — 2026-11-11 — setup reads org-config and writes its responses by backend
+## [1.4.5] — 2026-11-10 — setup reads org-config and writes its responses by backend
 
 Pairs with core 4.1.1 (Kallista Salak, bug-reports#6, CI-019).
 
