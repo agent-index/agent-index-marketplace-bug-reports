@@ -58,6 +58,8 @@ Read the members registry via `aifs_read("id:{members_registry}")` (OneDrive: `/
 
 Read the manifest from `{bug_log}/bug-manifest.json` via `aifs_read`.
 
+The manifest is only an index: `report-bug` doesn't write it, and it catches up when an admin runs `view-bugs`. So before listing, also `aifs_list("{bug_log}/bugs/")` and treat any bug file missing from the manifest as a candidate too (read its frontmatter for id, title, status, severity). A bug ID the admin names is read from its file even when the manifest has no entry (finding 45).
+
 If the member specified a bug ID, find it in the manifest. If not, show all bugs with status `open` or `acknowledged` (not already forwarded or closed) and ask the admin to select one. List bugs with a `forward_failed_at` value first, marked "⚠ previous forward failed {forward_failed_at}: {forward_last_error}".
 
 **Retry failed forwards (1.2.0).** If any open/acknowledged bug has `forward_failed_at` set, lead with: "{N} bug(s) have a failed forward attempt waiting to be retried. Retry them now?" On yes, run Steps 3–8 for each in turn — confirm once for the whole batch at Step 6 (list every bug), not once per bug. Stop the batch at the first `auth` or `network` failure (the next one will fail the same way); continue past a per-bug `payload` failure. Triggers like "retry failed forwards" or "resend failed bugs" go straight here.
@@ -222,7 +224,7 @@ Read stderr for the detail line and go to Step 8.
    - **{DATE} ({admin_display_name}):** Forwarded to agent-index. Server reference: {server_response_id}.
    ```
 4. Write back via `aifs_write("{bug_log}/bugs/{id}.md", content)`.
-5. Update the manifest entry via `aifs_read` then `aifs_write` on `bug-manifest.json` (set `status`, `forwarded_date`, and 1.3.0's `upstream_status: "submitted"`; drop `forward_failed_at`). The token is never copied into the manifest.
+5. Update the manifest entry via `aifs_read` then `aifs_write` on `bug-manifest.json` (set `status`, `forwarded_date`, and 1.3.0's `upstream_status: "submitted"`; drop `forward_failed_at`). If the bug has no entry yet, add one built from its frontmatter, in the same shape `view-bugs` uses when it reconciles. The token is never copied into the manifest.
 
 **On failure (1.2.0) — exit codes 2–5.** Record the attempt so it can be retried. Do this even though nothing was sent; it's the only trace the attempt happened.
 

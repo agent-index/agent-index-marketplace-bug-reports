@@ -148,7 +148,7 @@ closed_date: null
 
 ### Step 6 — Confirm Submission
 
-Tell the member: "Bug {id} has been submitted. Your org admin can see it in the bug log and forward it to agent-index if needed. You can follow it any time with '@ai:my-bugs'."
+Tell the member: "Bug {id} has been submitted. Your org admin can see it in the bug log and forward it to agent-index if needed. You can follow it any time with '@ai:my-bugs' (if you don't have it yet, say '@ai:setup' to add it)."
 
 ---
 
