@@ -1,0 +1,52 @@
+---
+name: my-bugs-setup
+type: setup
+version: 1.0.0
+collection: bug-reports
+description: Setup for the my-bugs skill — no member-specific configuration; all config is org-mandated at collection install time.
+target: my-bugs
+target_type: skill
+upgrade_compatible: true
+---
+
+## Setup Overview
+
+My Bugs requires no member-specific configuration. It uses the org-mandated `bug_log_path` and `log_server_url` from the collection setup. This setup validates install and filesystem access only.
+
+---
+
+## Pre-Setup Checks
+
+- Collection setup completed (verify `collection-setup-responses.md` exists at `id:{folder_id}/setup/collection-setup-responses.md`, where `folder_id` is the `bug-reports` entry in org-config's `installed_collections[]` and org-config is read via `aifs_read("id:{org_config_id}")` using `org_config_id` from the local `agent-index.json`; OneDrive: check `/bug-reports/setup/collection-setup-responses.md` by path, org-config at `/org-config.json` — core runtime-reference.md § "Addressing: Owned Content and Sharing", finding 63. On gdrive, never check a bare `/bug-reports/...` path: for a non-Shared-Drive member it resolves to the same-named `/shared/bug-reports` data folder and reports setup as incomplete when it is not) → if not: "Your org admin needs to complete the bug-reports collection setup first."
+- Remote filesystem accessible (`aifs_auth_status()`) → if not: "Please check your remote filesystem connection or run '@ai:member-bootstrap'."
+- Member write access to `bugs/` has been provisioned by the admin (collaborative-acls.json applied via `@ai:install-collection bug-reports`); my-bugs only writes a reply into the member's own bug file.
+
+---
+
+## Parameters
+
+No member-defined parameters. All configuration is inherited from the collection setup.
+
+---
+
+## Setup Completion
+
+1. Validate remote filesystem access.
+2. Register entry in `member-index.json` with alias `@ai:my-bugs`.
+3. Confirm to member: "My Bugs is ready. Say 'show my bugs' to see what happened to bugs you reported."
+
+---
+
+## Upgrade Behavior
+
+### Preserved Responses
+- None (no member-specific parameters)
+
+### Reset on Upgrade
+- None
+
+### Requires Member Attention
+- None
+
+### Migration Notes
+- v1.0.0: initial release (bug-reports 1.5.0).

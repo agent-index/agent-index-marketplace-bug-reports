@@ -1,7 +1,7 @@
 ---
 name: bug-reports-collection-setup
 type: collection-setup
-version: 1.1.1
+version: 1.2.0
 collection: bug-reports
 description: Org-admin setup for the bug-reports collection — configures the shared bug log path, admin roles, log collection server endpoint, and authentication for forwarding bugs upstream.
 upgrade_compatible: true
@@ -46,6 +46,18 @@ The API key used to authenticate with the log collection server. Sent as a Beare
 - Ask: "What API key should be used for the log collection server? If your org uses the community tier, you can use the bundled community key. Enterprise orgs should use their enterprise key."
 - Store this value on the **remote filesystem** at `{bug_log_path}/config/auth-key.txt` via `aifs_write`. Do not store it in the collection setup responses file — it's a secret.
 - **On a reconfigure** (`auth-key.txt` already exists): don't ask for a new key and don't write the default. Ask "Keep the current log server key? (yes / enter a new key)" and keep the existing file unless the admin enters a new key (`reconfigresetsdata`, Dev Two live test finding 30 — the default community key overwrote the configured one).
+- **Check the key with the server (1.5.0).** Whether the key is new or kept, write it to a temporary local file (native Write) and run `python {apps_path}/upstream.py --server-url "{log_server_url}" --key-file "{temp_key}" key-check`, then delete the file:
+  - `{"tier": "enterprise", "org": "<name>"}` → "Key accepted: enterprise, {org}." Record `log_server_key_tier: enterprise` and `log_server_key_org: {org}`.
+  - `{"tier": "community"}` → "Key accepted: community." Record `log_server_key_tier: community`.
+  - exit 2 (`auth`) → "The log server doesn't accept that key." Ask again; never save a key the server refuses unless the admin insists (then record `log_server_key_tier: unchecked`).
+  - exit 3/4, or exit 5 with HTTP 404 (a server older than 1.5.0) → "I couldn't check the key with the server just now; it's saved and will be checked on first use." Record `log_server_key_tier: unchecked`.
+- **In the setup responses** the key itself never appears. Instead write a `log_server_auth_key` entry (`### log_server_auth_key` / `- **Value:** stored in {bug_log_path}/config/auth-key.txt`) so update checks find a value for this parameter (bug platform decision 6; dev_source_2 FINDINGS 102).
+
+### `log_server_key_tier` [org-mandated]
+Not asked. Set by the key check above: `community`, `enterprise`, or `unchecked`. `forward-bug` uses it to tell a revoked enterprise key from a wrong community key, and never offers the community key to an enterprise org.
+
+### `log_server_key_org` [org-mandated]
+Not asked. The enterprise org name the server reported for the key; empty for community keys.
 
 ### `severity_levels` [org-mandated]
 The severity levels available when reporting bugs.
@@ -68,7 +80,7 @@ The severity levels available when reporting bugs.
    }
    ```
 5. Write the auth key to `{bug_log_path}/config/auth-key.txt` via `aifs_write` — only when the file doesn't exist yet or the admin entered a new key (see `log_server_auth_key`).
-6. Write `collection-setup-responses.md` to this collection's own `setup/` folder — Google Drive `id:{folder_id}/setup/collection-setup-responses.md` (`folder_id` from the `bug-reports` entry in org-config `installed_collections[]`), OneDrive `/bug-reports/setup/collection-setup-responses.md`; never a bare `/setup/`, which names a folder at the drive root — with all configured parameters (except the auth key), in the canonical setup-responses format (core `org-setup` Phase 4b step 8: frontmatter with `setup_status: complete`, then `## Org-Mandated Parameters` with one `### {param_name}` / `- **Value:**` block per parameter) (finding 14).
+6. Write `collection-setup-responses.md` to this collection's own `setup/` folder (1.5.0: including `log_server_key_tier`, `log_server_key_org`, and the `log_server_auth_key: stored in …` placeholder line — never the key) — Google Drive `id:{folder_id}/setup/collection-setup-responses.md` (`folder_id` from the `bug-reports` entry in org-config `installed_collections[]`), OneDrive `/bug-reports/setup/collection-setup-responses.md`; never a bare `/setup/`, which names a folder at the drive root — with all configured parameters (except the auth key), in the canonical setup-responses format (core `org-setup` Phase 4b step 8: frontmatter with `setup_status: complete`, then `## Org-Mandated Parameters` with one `### {param_name}` / `- **Value:**` block per parameter) (finding 14).
 7. Confirm to admin: "Bug Reports is set up. Members can submit bugs with '@ai:report-bug'. Admins with {admin_roles} roles can view bugs with '@ai:view-bugs' and forward them with '@ai:forward-bug'."
 
 ---
@@ -79,7 +91,8 @@ The severity levels available when reporting bugs.
 - `bug_log_path`
 - `admin_roles`
 - `log_server_url`
-- `log_server_auth_key` (stored separately on remote filesystem)
+- `log_server_auth_key` (stored separately on remote filesystem; the setup responses hold only the "stored in …" placeholder line)
+- `log_server_key_tier`, `log_server_key_org` (1.5.0)
 - `severity_levels`
 - All existing bug log entries and manifest data
 
@@ -91,4 +104,4 @@ The severity levels available when reporting bugs.
 - If admin roles change, access changes take effect on next invocation
 
 ### Migration Notes
-- v1.0 → future versions: migration notes will be added here as new versions are published.
+- **1.4.x → 1.5.0:** Setup Completion changed (the key check and the placeholder line), so after the upgrade `upgrade-collection` asks the admin to run `@ai:install-collection bug-reports` once (reconfigure). Answer "yes" to "Keep the current log server key?"; setup then checks the key with the server, records `log_server_key_tier`, and writes the placeholder line, which stops the "no value for `log_server_auth_key`" warning on every update. Existing bugs and the manifest are untouched. Bugs forwarded before the upgrade get their agent-index status the first time an admin opens `@ai:view-bugs` afterwards.

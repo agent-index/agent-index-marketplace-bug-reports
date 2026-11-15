@@ -34,7 +34,7 @@ None yet.
 ### v1.3 — Richer reports
 - Attachment support — allow members to reference files (error logs, screenshots) stored at a known path on the remote filesystem
 - Bug templates — pre-defined templates for common bug types (crash, data loss, classification error, setup failure) with tailored questions
-- Auto-populate collection version — read the installed collection version and include it in the report automatically
+- ~~Auto-populate collection version~~ Done in 1.5.0: forward-bug sends the org's core and collection versions (`environment`).
 
 ### v2.0 — Structural changes (breaking)
 - Add webhook support as an alternative to the Python script for forwarding

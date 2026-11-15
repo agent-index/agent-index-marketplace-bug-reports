@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.5.0] — <RELEASE_DATE> — bug platform: follow forwarded bugs to the fix
+
+Pairs with the log collector's bug platform (agent-index project `bug-admin-platform`). Older log servers keep working: the new checks and status calls are skipped when the server doesn't offer them.
+
+### Added
+- **`my-bugs` (skill 1.0.0):** "show my bugs" — a member's own bugs with the org's status and agent-index's status, note, open question and fix version; members answer questions here. Own bugs only (decision A).
+- **`apps/upstream.py`:** key check, status, claim and reply calls to the log server (standard library; keys, tokens and texts read from files, never the command line).
+- **Tutorial topic "What happens after a bug is forwarded"** (bug-reports-tutorial 1.2.0).
+
+### Changed
+- **forward-bug 1.3.0:** sends member hashes only — no names or email addresses — and tells the admin the bug text goes as written (decision B); adds `client` and the org's versions (`environment`); saves agent-index's reference and status token in the bug file (`upstream:`); checks the key with the server first and **never offers the community key to an org on an enterprise key** (bug platform finding 2).
+- **view-bugs 1.4.0:** claims older forwarded bugs once (by server reference and org hash), fetches agent-index's status for every forwarded bug and saves it, shows "fixed in X, your org has Y", offers (never forces) to close fixed bugs, and lets admins answer agent-index's questions.
+- **Admin access with no org roles (view-bugs, forward-bug):** org admins (org-config `admins[]`) always have access, and with `admin_roles` empty only they do — as collection setup already said. Read literally, both refused every member when `admin_roles` was empty (found in the bug platform's Phase 0 test, ms_install_9).
+- **Bug log addressed by id on Google Drive (report-bug 1.2.3, update-bug 1.0.3, view-bugs, forward-bug, my-bugs):** every read, list and write under `bug_log_path` now goes through `id:{shared_root}/…` on Google Drive. These tasks used the bare `/shared/bug-reports/…` path, so a member outside the Shared Drive couldn't file or update a bug at all (`BACKEND_ERROR: File not found`). Found in the bug platform's Phase 0 test, Dev One member four (finding 38). OneDrive is unchanged.
+- **Bug titles reach the index:** report-bug 1.2.3 writes `title` in the bug file's frontmatter, and view-bugs takes the first `## ` heading when an older file has none. Before this, reconcile indexed every member-filed bug with a null title (Phase 0, Dev One admin). report-bug's confirmation now points members at `@ai:my-bugs`.
+- **Collection setup 1.2.0:** checks the log-server key with the server ("Key accepted: enterprise, {org}") and records its tier; writes a `log_server_auth_key: stored in …` placeholder so updates stop reporting a missing value (dev_source_2 FINDINGS 102).
+
+### Upgrade
+- Setup changed, so after upgrading the admin runs `@ai:install-collection bug-reports` once and keeps the current key. Nothing else to do; older forwarded bugs get their agent-index status the next time an admin opens `@ai:view-bugs`.
+
 ## [1.4.5] — 2026-11-10 — setup reads org-config and writes its responses by backend
 
 Pairs with core 4.1.1 (Kallista Salak, bug-reports#6, CI-019).
