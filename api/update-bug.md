@@ -51,7 +51,7 @@ If remote access fails (auth/connectivity): attempt `aifs_authenticate`; if stil
 ### Step 2 — Identify the Target Bug
 
 - If the member names a bug ID, use it.
-- If the member says "my bugs" / "the bug I filed", help them find it **without writing shared state**: read the admin-maintained index `{bug_log}/bug-manifest.json` via `aifs_read` (members have reader), filter entries where `reporter_hash` == the current member's hash, and present that short list. If the index is unavailable or empty, ask the member for the bug ID directly. Members never write the index.
+- If the member says "my bugs" / "the bug I filed", help them find it **without writing shared state**: read the admin-maintained index `{bug_log}/bug-manifest.json` via `aifs_read` (members have reader), filter entries where `reporter.member_hash` (manifest entries copy the bug file's `reporter` block; accept a flat `reporter_hash` too, for older manifests) == the current member's hash, and present that short list. If the index is unavailable or empty, ask the member for the bug ID directly. Members never write the index.
 
 ### Step 3 — Ownership Check
 

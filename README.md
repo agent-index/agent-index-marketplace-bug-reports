@@ -10,7 +10,7 @@ Bug reporting workflow for agent-index orgs. Any member can submit bug reports a
 
 - **forward-bug** (task) — Forward a selected bug report to the upstream agent-index log collection server. Packages the bug into the log collector's expected JSON envelope (member IDs only — no names or email addresses), authenticates with the configured API key, and sends via HTTP. Marks the bug as forwarded in the shared log and saves agent-index's reference and status token for it; if the send fails, records the failed attempt on the bug so it can be resent with "retry failed forwards". Admin roles only.
 
-- **my-bugs** (skill, 1.5.0) — "Show my bugs": a member's own bugs with the org's status and agent-index's status, note, question and fix version. Members can answer agent-index's questions here. Own bugs only.
+- **my-bugs** (skill, 1.5.0) — "Show my bugs": a member's own bugs with the org's status and agent-index's status, note, question and fix version. Members can answer agent-index's questions here; the admin's view-bugs sends the answers and keeps the status current. Own bugs only (a view: the bug log itself is readable by all members).
 
 - **bug-reports-tutorial** (skill) — Guided walkthrough of how the bug reporting system works. Explains concepts, workflows, and answers specific questions about filing and managing bugs. Say `@ai:bug-tutorial` to start.
 

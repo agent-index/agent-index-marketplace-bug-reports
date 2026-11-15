@@ -11,7 +11,7 @@ upgrade_compatible: true
 
 ## Setup Overview
 
-My Bugs requires no member-specific configuration. It uses the org-mandated `bug_log_path` and `log_server_url` from the collection setup. This setup validates install and filesystem access only.
+My Bugs requires no member-specific configuration. It uses the org-mandated `bug_log_path` from the collection setup. This setup validates install and filesystem access only.
 
 ---
 

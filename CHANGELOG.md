@@ -5,7 +5,7 @@
 Pairs with the log collector's bug platform (agent-index project `bug-admin-platform`). Older log servers keep working: the new checks and status calls are skipped when the server doesn't offer them.
 
 ### Added
-- **`my-bugs` (skill 1.0.0):** "show my bugs" — a member's own bugs with the org's status and agent-index's status, note, open question and fix version; members answer questions here. Own bugs only (decision A).
+- **`my-bugs` (skill 1.0.0):** "show my bugs" — a member's own bugs with the org's status and agent-index's status, note, open question and fix version, as last synced by the admin's `view-bugs`; members answer questions here, and `view-bugs` sends the answers. Members never read the org's log-server key or call the log server (decision 50). Own bugs only (decision A). This is a view, not a storage boundary: like every version since 1.3.0, the bug log is readable by all members.
 - **`apps/upstream.py`:** key check, status, claim and reply calls to the log server (standard library; keys, tokens and texts read from files, never the command line).
 - **Tutorial topic "What happens after a bug is forwarded"** (bug-reports-tutorial 1.2.0).
 
@@ -17,6 +17,7 @@ Pairs with the log collector's bug platform (agent-index project `bug-admin-plat
 - **Bug titles reach the index:** report-bug 1.2.3 writes `title` in the bug file's frontmatter, and view-bugs takes the first `## ` heading when an older file has none. Before this, reconcile indexed every member-filed bug with a null title (Phase 0, Dev One admin). report-bug's confirmation now points members at `@ai:my-bugs`.
 - **`org_hash` defined (forward-bug, view-bugs):** `"sha256:"` + the first 16 hex characters of SHA-256 of the lowercase org name, core upload-install-log's rule. forward-bug only said "the org's identifier hash", and org-config has no such field, so agents computed different values (bug platform finding 41). agent-index uses this value to match claims and status to the org.
 - **forward-bug finds bugs the index hasn't caught up with:** it lists bug files missing from `bug-manifest.json` (report-bug never writes the manifest), reads a named bug from its file, and adds the manifest entry when it forwards one (bug platform finding 45).
+- **my-bugs and update-bug match the member on `reporter.member_hash`:** both said `reporter_hash`, a field the manifest doesn't have, so read literally a member's own bugs never matched (bug platform finding 49).
 - **Collection setup 1.2.0:** checks the log-server key with the server ("Key accepted: enterprise, {org}") and records its tier; runs the key check with the collection's own `apps/upstream.py` (read to a temporary file, since members' apps aren't synced yet at setup time); writes a `log_server_auth_key: stored in …` placeholder so updates stop reporting a missing value (dev_source_2 FINDINGS 102).
 
 ### Upgrade

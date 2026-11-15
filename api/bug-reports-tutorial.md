@@ -82,7 +82,7 @@ agent-index works through forwarded bugs and records what it does with each one.
 
 - **Admins** see it in `@ai:view-bugs`, next to your org's own status: in review, needs more information, accepted, fixed (waiting for a release), fixed and released, or closed as won't do, a known issue (another org reported it first — you follow that report's progress), can't reproduce, or works as intended. agent-index may add a short note for your org.
 - **The member who reported it** says "show my bugs" (`@ai:my-bugs`) to see the same for their own bugs — and only their own.
-- **Questions.** If agent-index needs more information, the bug shows the question. The admin (in view-bugs) or the reporter (in my-bugs) can answer it right there; the answer goes back to agent-index.
+- **Questions.** If agent-index needs more information, the bug shows the question. The admin (in view-bugs) can answer it right there. The reporter can answer in my-bugs; the answer is saved on the bug and goes to agent-index the next time an admin opens view-bugs. my-bugs shows agent-index's status as of the admin's last view-bugs.
 - **Fixes.** When the fix ships, the bug says which release has it and whether your org already runs it — for example "fixed in projects 4.4.4, your org has 4.4.3: an admin can publish updates to get it".
 
 

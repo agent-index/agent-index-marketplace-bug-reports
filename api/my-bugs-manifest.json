@@ -13,8 +13,7 @@
   "dependency_status": "complete",
   "missing_dependencies": [],
   "parameter_provenance": {
-    "bug_log_path": "org-mandated",
-    "log_server_url": "org-mandated"
+    "bug_log_path": "org-mandated"
   },
   "dependencies": {
     "skills": [],
