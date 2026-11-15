@@ -18,6 +18,7 @@ Pairs with the log collector's bug platform (agent-index project `bug-admin-plat
 - **`org_hash` defined (forward-bug, view-bugs):** `"sha256:"` + the first 16 hex characters of SHA-256 of the lowercase org name, core upload-install-log's rule. forward-bug only said "the org's identifier hash", and org-config has no such field, so agents computed different values (bug platform finding 41). agent-index uses this value to match claims and status to the org.
 - **forward-bug finds bugs the index hasn't caught up with:** it lists bug files missing from `bug-manifest.json` (report-bug never writes the manifest), reads a named bug from its file, and adds the manifest entry when it forwards one (bug platform finding 45).
 - **my-bugs and update-bug match the member on `reporter.member_hash`:** both said `reporter_hash`, a field the manifest doesn't have, so read literally a member's own bugs never matched (bug platform finding 49).
+- **forward-bug sends the reporter's updates:** `### Reporter Updates` entries (from update-bug) go with `additional_context`, dated, without names. Before this they were silently left out (bug platform finding 52).
 - **Collection setup 1.2.0:** checks the log-server key with the server ("Key accepted: enterprise, {org}") and records its tier; runs the key check with the collection's own `apps/upstream.py` (read to a temporary file, since members' apps aren't synced yet at setup time); writes a `log_server_auth_key: stored in …` placeholder so updates stop reporting a missing value (dev_source_2 FINDINGS 102).
 
 ### Upgrade

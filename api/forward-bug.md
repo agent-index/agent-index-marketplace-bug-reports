@@ -72,7 +72,7 @@ If no eligible bugs exist, inform: "No open or acknowledged bugs to forward. All
 
 ### Step 3 — Load Bug Details
 
-Read the individual bug file from `{bug_log}/bugs/{id}.md` via `aifs_read`. Parse the YAML frontmatter and markdown body. Extract all fields: id, title, collection, severity, reporter, description, expected behavior, steps to reproduce, additional context, and admin notes.
+Read the individual bug file from `{bug_log}/bugs/{id}.md` via `aifs_read`. Parse the YAML frontmatter and markdown body. Extract all fields: id, title, collection, severity, reporter, description, expected behavior, steps to reproduce, additional context, admin notes, and the reporter's own later additions (`### Reporter Updates`, written by `update-bug`). Send the Reporter Updates as part of `additional_context`, after the original context, under the line "Reporter updates:", without the display names (keep the dates). They often carry the detail agent-index needs (finding 52).
 
 ### Step 4 — Load Auth Key
 
