@@ -144,7 +144,7 @@ Construct the log collector's expected JSON payload:
 
 Notes:
 - `run_id`: generate a UUID v4 for this forwarding event.
-- `org_hash`: take from the org-config already read by id anchor in Step 1 (never `aifs_read("/org-config.json")` — that bare path fails for non-Shared-Drive members) — use the org's identifier hash.
+- `org_hash`: take from the org-config already read by id anchor in Step 1 (never `aifs_read("/org-config.json")` — that bare path fails for non-Shared-Drive members) — compute it as `"sha256:"` followed by the first 16 hex characters of the SHA-256 of the **lowercase org name** (`org_name` in org-config), for example `sha256:0b0be3a3408f7d4a`. This is core `upload-install-log`'s rule, so bug forwards and install logs identify the org the same way. Never hash `org_id` or anything else: agent-index matches claims, status and the org's key by this value (1.5.0, bug platform finding 41).
 - `member_hash`: use the original bug reporter's hash, not the admin's.
 - `agent_index_version`: read from the local agent-index-core version if available, otherwise use `"unknown"`.
 - **No names or email addresses (1.3.0, decision B).** `reporter` and `forwarded_by` carry the member hash only. Do not add display names or emails anywhere in the payload. The bug's own text (description, steps, context, admin notes) is sent as written; Step 6 tells the admin so.
