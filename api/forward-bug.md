@@ -176,12 +176,12 @@ Run the forwarding script from the collection's `/apps/` directory:
 ```bash
 python {apps_path}/forward-bug.py \
     --server-url "{log_server_url}" \
-    --auth-key "{auth_key}" \
+    --key-file "{temp_key_path}" \
     --payload-file "{temp_payload_path}"
 ```
 
 Before calling the script:
-1. Write the JSON payload to a temporary local file using native Write.
+1. Write the JSON payload to a temporary local file using native Write. The key goes in the temporary key file from Step 4, never on the command line (1.5.0, finding 57).
 2. Run the script.
 3. Check the exit code and stdout.
 4. Delete the temporary payload file and the temporary key file from Step 4.
