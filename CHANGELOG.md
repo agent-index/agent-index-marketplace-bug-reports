@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.5.0] — 2026-11-16 — bug platform: follow forwarded bugs to the fix
+
+Pairs with the log collector's bug platform (agent-index project `bug-admin-platform`). Older log servers keep working: the new checks and status calls are skipped when the server doesn't offer them.
+
+### Added
+- **`my-bugs` (skill 1.0.0):** "show my bugs" — a member's own bugs with the org's status and agent-index's status, note, open question and fix version, as last synced by the admin's `view-bugs`; members answer questions here, and `view-bugs` sends the answers. Members never read the org's log-server key or call the log server (decision 50). Own bugs only (decision A). This is a view, not a storage boundary: like every version since 1.3.0, the bug log is readable by all members.
+- **`apps/upstream.py`:** key check, status, claim and reply calls to the log server (standard library; keys, tokens and texts read from files, never the command line).
+- **Tutorial topic "What happens after a bug is forwarded"** (bug-reports-tutorial 1.2.0).
+
+### Changed
+- **forward-bug 1.3.0:** sends member hashes only — no names or email addresses — and tells the admin the bug text goes as written (decision B); adds `client` and the org's versions (`environment`); saves agent-index's reference and status token in the bug file (`upstream:`); checks the key with the server first and **never offers the community key to an org on an enterprise key** (bug platform finding 2).
+- **view-bugs 1.4.0:** claims older forwarded bugs once (by server reference and org hash), fetches agent-index's status for every forwarded bug and saves it, shows "fixed in X, your org has Y", offers (never forces) to close fixed bugs, and lets admins answer agent-index's questions.
+- **Admin access with no org roles (view-bugs, forward-bug):** org admins (org-config `admins[]`) always have access, and with `admin_roles` empty only they do — as collection setup already said. Read literally, both refused every member when `admin_roles` was empty (found in the bug platform's Phase 0 test, ms_install_9).
+- **Bug log addressed by id on Google Drive (report-bug 1.2.3, update-bug 1.0.3, view-bugs, forward-bug, my-bugs):** every read, list and write under `bug_log_path` now goes through `id:{shared_root}/…` on Google Drive. These tasks used the bare `/shared/bug-reports/…` path, so a member outside the Shared Drive couldn't file or update a bug at all (`BACKEND_ERROR: File not found`). Found in the bug platform's Phase 0 test, Dev One member four (finding 38). OneDrive is unchanged.
+- **Bug titles reach the index:** report-bug 1.2.3 writes `title` in the bug file's frontmatter, and view-bugs takes the first `## ` heading when an older file has none. Before this, reconcile indexed every member-filed bug with a null title (Phase 0, Dev One admin). report-bug's confirmation now points members at `@ai:my-bugs`.
+- **`org_hash` is the org's `org_uuid` (forward-bug, view-bugs):** forward-bug only said "the org's identifier hash", and org-config has no such field, so agents computed different values (bug platform finding 41). A hash of the org name (core's install-log rule) was tried first, but two orgs with the same name collided (finding 54), so 1.5.0 sends `org_uuid` as written. view-bugs' one-time claim of older forwards also tries the older values agents used (the name hash with and without `sha256:`, the lowercase name, the org_id), so forwards from before 1.5.0 still link (finding 58).
+- **forward-bug finds bugs the index hasn't caught up with:** it lists bug files missing from `bug-manifest.json` (report-bug never writes the manifest), reads a named bug from its file, and adds the manifest entry when it forwards one (bug platform finding 45).
+- **my-bugs and update-bug match the member on `reporter.member_hash`:** both said `reporter_hash`, a field the manifest doesn't have, so read literally a member's own bugs never matched (bug platform finding 49).
+- **forward-bug sends the reporter's updates:** `### Reporter Updates` entries (from update-bug) go with `additional_context`, dated, without names. Before this they were silently left out (bug platform finding 52).
+- **forward-bug.py takes the key from a file (`--key-file`):** the key no longer appears on the command line or in the process list; `--auth-key` still works for older task files (bug platform finding 57).
+- **Collection setup 1.2.0:** checks the log-server key with the server ("Key accepted: enterprise, {org}") and records its tier; runs the key check with the collection's own `apps/upstream.py` (read to a temporary file, since members' apps aren't synced yet at setup time); writes a `log_server_auth_key: stored in …` placeholder so updates stop reporting a missing value (dev_source_2 FINDINGS 102).
+
+### Upgrade
+- Setup changed, so after upgrading the admin runs `@ai:install-collection bug-reports` once and keeps the current key. Nothing else to do; older forwarded bugs get their agent-index status the next time an admin opens `@ai:view-bugs`. `@ai:update` brings members' installed bug-reports skills to 1.5.0 but doesn't add new ones: a member adds `my-bugs` by saying `@ai:setup` (bug platform finding 36).
+
 ## [1.4.5] — 2026-11-10 — setup reads org-config and writes its responses by backend
 
 Pairs with core 4.1.1 (Kallista Salak, bug-reports#6, CI-019).

@@ -1,7 +1,7 @@
 ---
 name: report-bug
 type: task
-version: 1.2.2
+version: 1.2.3
 collection: bug-reports
 description: Walk a member through submitting a bug report — collect details about the issue, severity, and reproduction steps, then write the report as an individual file. The shared index is maintained by view-bugs (reconcile-on-read), not this task.
 stateful: true
@@ -45,6 +45,7 @@ On gdrive, resolve both reads by id anchor, never by bare path (OneDrive: read `
 2. From org-config take the `bug-reports` entry's `folder_id` in `installed_collections[]`, and `resource_ids.members_registry`.
 3. Read `aifs_read("id:{folder_id}/setup/collection-setup-responses.md")` to get `bug_log_path` and `severity_levels`.
 4. Read the members registry via `aifs_read("id:{members_registry}")` to resolve the current member's identity (display_name, member_hash, email) for attribution.
+5. **Resolve the bug log location — `{bug_log}` (1.5.0, bug platform finding 38).** `bug_log_path` is an org path such as `/shared/bug-reports/`. On gdrive, address it through org-config's `resource_ids.shared_root`: `/shared/{rest}` becomes `id:{shared_root}/{rest}` (no trailing slash), and every `{bug_log}/...` read, list and write in this file uses that id anchor. Never use the bare `/shared/...` path on gdrive: for a member outside the Shared Drive it fails with `BACKEND_ERROR` / `FILE_NOT_FOUND` (core runtime-reference.md § "Addressing: Owned Content and Sharing", `memberpathreads`). If `shared_root` is missing, halt and name it. On OneDrive, `{bug_log}` is `bug_log_path` as written, without the trailing slash.
 
 Do not read `/org-config.json`, `/members-registry.json`, or `/bug-reports/...` by bare path. For a member who is not a Shared Drive member these return FILE_NOT_FOUND, or resolve `/bug-reports` to the same-named `/shared/bug-reports` data folder (`memberdupcollfolders`/`nameambig`; bug `20260921-8d20ea22-185412-c4e7`). If `org_config_id`, `folder_id`, or `members_registry` is missing, halt and name the missing value — do not fall back to a bare path.
 
@@ -110,11 +111,12 @@ If the member wants to change anything, go back to the relevant sub-step in Step
 
 ### Step 5 — Write Bug File
 
-Write the bug report as an individual markdown file at `{bug_log_path}/bugs/{id}.md` via `aifs_write`. Each bug file uses this format:
+Write the bug report as an individual markdown file at `{bug_log}/bugs/{id}.md` via `aifs_write`. Each bug file uses this format:
 
 ```markdown
 ---
 id: "{id}"
+title: "{title}"
 status: "open"
 reporter:
   display_name: "{display_name}"
@@ -142,11 +144,11 @@ closed_date: null
 (none)
 ```
 
-Write the file via `aifs_write("{bug_log_path}/bugs/{id}.md", content)`. This is the only write this task performs — it does **not** touch `bug-manifest.json` (see About: `view-bugs` reconciles the index from the bug files).
+`title` in the frontmatter (1.2.3) repeats the `## {title}` heading so `view-bugs` can index it; escape any double quotes in it. Write the file via `aifs_write("{bug_log}/bugs/{id}.md", content)`. This is the only write this task performs — it does **not** touch `bug-manifest.json` (see About: `view-bugs` reconciles the index from the bug files).
 
 ### Step 6 — Confirm Submission
 
-Tell the member: "Bug {id} has been submitted. Your org admin can see it in the bug log and forward it to agent-index if needed. You can check on it by asking an admin to run '@ai:view-bugs'."
+Tell the member: "Bug {id} has been submitted. Your org admin can see it in the bug log and forward it to agent-index if needed. You can follow it any time with '@ai:my-bugs' (if you don't have it yet, say '@ai:setup' to add it)."
 
 ---
 

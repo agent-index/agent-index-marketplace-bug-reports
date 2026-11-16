@@ -1,7 +1,7 @@
 ---
 name: bug-reports-tutorial
 type: skill
-version: 1.1.1
+version: 1.2.0
 collection: bug-reports
 description: Explains the bug-reports collection to members — its concepts, workflows, and how to report bugs and understand the admin triage process — through a guided tour or targeted answers to specific questions.
 stateful: false
@@ -40,7 +40,7 @@ Read the collection setup responses before responding, so examples reflect the c
 
 ### Guided Tour Sequence
 
-Five topics in order. After each, check in.
+Six topics in order. After each, check in.
 
 **Topic 1: What the bug-reports collection does**
 
@@ -74,9 +74,19 @@ When your org wants to escalate a bug to the agent-index team, an admin runs `@a
 
 Once a bug is forwarded, it's marked as such in your shared log. The admin notes field will show when it was forwarded and what the upstream server reference is. If a forward fails (for example, the agent-index server is temporarily down), the bug stays in its current status and is flagged as a failed forward — say "retry failed forwards" later to resend it. A server-side failure is never a problem with your org's key, so don't change the key unless forward-bug specifically reports an authentication failure.
 
-Forwarding is admin-only and always requires explicit confirmation before sending.
+Forwarding is admin-only and always requires explicit confirmation before sending. Only member IDs go to agent-index — never names or email addresses — but the bug's own text goes as written, so the admin checks it before sending.
 
-**Topic 5: Making the system work**
+**Topic 5: What happens after a bug is forwarded**
+
+agent-index works through forwarded bugs and records what it does with each one. Your org sees that progress — nobody is emailed, you see it when you look:
+
+- **Admins** see it in `@ai:view-bugs`, next to your org's own status: in review, needs more information, accepted, fixed (waiting for a release), fixed and released, or closed as won't do, a known issue (another org reported it first — you follow that report's progress), can't reproduce, or works as intended. agent-index may add a short note for your org.
+- **The member who reported it** says "show my bugs" (`@ai:my-bugs`) to see the same for their own bugs — and only their own.
+- **Questions.** If agent-index needs more information, the bug shows the question. The admin (in view-bugs) can answer it right there. The reporter can answer in my-bugs; the answer is saved on the bug and goes to agent-index the next time an admin opens view-bugs. my-bugs shows agent-index's status as of the admin's last view-bugs.
+- **Fixes.** When the fix ships, the bug says which release has it and whether your org already runs it — for example "fixed in projects 4.4.4, your org has 4.4.3: an admin can publish updates to get it".
+
+
+**Topic 6: Making the system work**
 
 The system only works if two things happen: members report bugs when they find them, and admins review reports on a regular cadence.
 
@@ -96,7 +106,7 @@ When the member invokes this skill:
 
 1. **Determine mode.** Is the member asking for a guided tour ("walk me through it," "how does this work," "I'm new to this," bare invocation) or a specific question?
 
-2. **Guided tour:** Run the five-topic sequence above. After each topic, ask: "Does that make sense, or would you like me to go deeper on anything?" Let the member move at their own pace.
+2. **Guided tour:** Run the six-topic sequence above. After each topic, ask: "Does that make sense, or would you like me to go deeper on anything?" Let the member move at their own pace.
 
 3. **Specific question:** Answer directly and completely. After answering, ask if they have related questions.
 

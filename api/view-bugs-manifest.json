@@ -3,8 +3,8 @@
   "type": "skill",
   "display_name": "View Bugs",
   "collection": "bug-reports",
-  "collection_version": "1.4.5",
-  "version": "1.3.2",
+  "collection_version": "1.5.0",
+  "version": "1.4.0",
   "eol_date": null,
   "eol_warning_days": 60,
   "stateful": true,
@@ -13,7 +13,8 @@
   "missing_dependencies": [],
   "parameter_provenance": {
     "bug_log_path": "org-mandated",
-    "admin_roles": "org-mandated"
+    "admin_roles": "org-mandated",
+    "log_server_url": "org-mandated"
   },
   "dependencies": {
     "skills": [],

@@ -1,7 +1,7 @@
 ---
 name: update-bug
 type: task
-version: 1.0.2
+version: 1.0.3
 collection: bug-reports
 description: Let a member add detail to or update the status-neutral fields of a bug THEY reported. Ownership-enforced — a member can only edit their own bugs. Admin triage (status changes, notes on any bug) stays in view-bugs.
 stateful: true
@@ -42,6 +42,7 @@ On gdrive, resolve both reads by id anchor, never by bare path (OneDrive: read `
 2. From org-config take the `bug-reports` entry's `folder_id` in `installed_collections[]`, and `resource_ids.members_registry`.
 3. Read `aifs_read("id:{folder_id}/setup/collection-setup-responses.md")` for `bug_log_path`.
 4. Read the members registry via `aifs_read("id:{members_registry}")` to resolve the current member's `member_hash` and `display_name`.
+5. **Resolve the bug log location — `{bug_log}` (1.5.0, bug platform finding 38).** `bug_log_path` is an org path such as `/shared/bug-reports/`. On gdrive, address it through org-config's `resource_ids.shared_root`: `/shared/{rest}` becomes `id:{shared_root}/{rest}` (no trailing slash), and every `{bug_log}/...` read, list and write in this file uses that id anchor. Never use the bare `/shared/...` path on gdrive: for a member outside the Shared Drive it fails with `BACKEND_ERROR` / `FILE_NOT_FOUND` (core runtime-reference.md § "Addressing: Owned Content and Sharing", `memberpathreads`). If `shared_root` is missing, halt and name it. On OneDrive, `{bug_log}` is `bug_log_path` as written, without the trailing slash.
 
 Do not read `/org-config.json`, `/members-registry.json`, or `/bug-reports/...` by bare path. For a member who is not a Shared Drive member these return FILE_NOT_FOUND, or resolve `/bug-reports` to the same-named `/shared/bug-reports` data folder (`memberdupcollfolders`/`nameambig`; bug `20260921-8d20ea22-185412-c4e7`). If `org_config_id`, `folder_id`, or `members_registry` is missing, halt and name the missing value — do not fall back to a bare path.
 
@@ -50,11 +51,11 @@ If remote access fails (auth/connectivity): attempt `aifs_authenticate`; if stil
 ### Step 2 — Identify the Target Bug
 
 - If the member names a bug ID, use it.
-- If the member says "my bugs" / "the bug I filed", help them find it **without writing shared state**: read the admin-maintained index `{bug_log_path}/bug-manifest.json` via `aifs_read` (members have reader), filter entries where `reporter_hash` == the current member's hash, and present that short list. If the index is unavailable or empty, ask the member for the bug ID directly. Members never write the index.
+- If the member says "my bugs" / "the bug I filed", help them find it **without writing shared state**: read the admin-maintained index `{bug_log}/bug-manifest.json` via `aifs_read` (members have reader), filter entries where `reporter.member_hash` (manifest entries copy the bug file's `reporter` block; accept a flat `reporter_hash` too, for older manifests) == the current member's hash, and present that short list. If the index is unavailable or empty, ask the member for the bug ID directly. Members never write the index.
 
 ### Step 3 — Ownership Check
 
-Read the target bug file via `aifs_read("{bug_log_path}/bugs/{id}.md")`. Compare the frontmatter `reporter.member_hash` to the current member's hash.
+Read the target bug file via `aifs_read("{bug_log}/bugs/{id}.md")`. Compare the frontmatter `reporter.member_hash` to the current member's hash.
 
 - If they do **not** match: refuse — "You can only update bugs you reported. Ask an admin to use '@ai:view-bugs' to change someone else's bug." Halt without writing.
 - If the file does not exist: "No bug found with ID '{id}'." Halt.
@@ -75,7 +76,7 @@ Confirm the change with the member before writing.
 
 ### Step 5 — Write the Bug File
 
-Write the updated file back via `aifs_write("{bug_log_path}/bugs/{id}.md", content)`. This is the only write. **Do not** write `bug-manifest.json` — `view-bugs` reconciles the index from the files on its next load.
+Write the updated file back via `aifs_write("{bug_log}/bugs/{id}.md", content)`. This is the only write. **Do not** write `bug-manifest.json` — `view-bugs` reconciles the index from the files on its next load.
 
 ### Step 6 — Confirm
 
