@@ -5,7 +5,7 @@ Talk to the agent-index log server about bugs this org has already forwarded (bu
 Usage:
     python upstream.py --server-url URL --key-file PATH key-check
     python upstream.py --server-url URL --key-file PATH status --bugs-file PATH
-    python upstream.py --server-url URL --key-file PATH claim  --org-hash HASH --ids-file PATH
+    python upstream.py --server-url URL --key-file PATH claim  --org-hash HASH --ids-file PATH [--org-uuid UUID]
     python upstream.py --server-url URL --key-file PATH reply  --id ID --token-file PATH --member-hash HASH --text-file PATH
 
 --server-url is the collection's log_server_url (".../logs"); the base is taken from it.
@@ -116,6 +116,7 @@ def main():
     sub.add_parser("key-check")
     p = sub.add_parser("status"); p.add_argument("--bugs-file", required=True)
     p = sub.add_parser("claim"); p.add_argument("--org-hash", required=True); p.add_argument("--ids-file", required=True)
+    p.add_argument("--org-uuid", default="", help="the org's org_uuid; claimed bugs move onto it (1.5.1, finding 63)")
     p = sub.add_parser("reply")
     p.add_argument("--id", required=True); p.add_argument("--token-file", required=True)
     p.add_argument("--member-hash", default=""); p.add_argument("--text-file", required=True)
@@ -140,7 +141,10 @@ def main():
         ids = read_json(a.ids_file, "ids")
         if not isinstance(ids, list) or len(ids) > 200 or not all(isinstance(i, str) and i for i in ids):
             fail(EXIT_LOCAL, "local", "ids file must be a list of up to 200 server references")
-        out = call(base, key, "POST", "/bugs/claim", {"org_hash": a.org_hash, "ids": ids})
+        body = {"org_hash": a.org_hash, "ids": ids}
+        if a.org_uuid:
+            body["org_uuid"] = a.org_uuid
+        out = call(base, key, "POST", "/bugs/claim", body)
     else:
         text = read_text(a.text_file, "reply text")
         if not text:

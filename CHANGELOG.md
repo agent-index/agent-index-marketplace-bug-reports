@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1] — 2026-11-17 — one org, one identity
+
+### Fixed
+- **view-bugs 1.4.1:** the one-time claim of older forwards also sends the org's `org_uuid` (`upstream.py claim --org-uuid`). The log server moves each claimed bug from the legacy org value it was forwarded with onto the org_uuid. Before this, agent-index saw an upgraded org as two orgs: its new forwards under the org_uuid and its older ones under the old value (bug platform finding 63, seen with Brainly). Needs the log collector's claim change (2026-11-17); older servers ignore the extra field.
+
+### Upgrade
+- Nothing to do. Bugs already linked under 1.5.0 are moved by agent-index.
+
 ## [1.5.0] — 2026-11-16 — bug platform: follow forwarded bugs to the fix
 
 Pairs with the log collector's bug platform (agent-index project `bug-admin-platform`). Older log servers keep working: the new checks and status calls are skipped when the server doesn't offer them.
